@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
+<meta name="theme-color" content="#1e7e34">
+<title>RST ELECTRONICS - Complete ERP with Auto Backup</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--primary:#1e7e34;--primary-dark:#0f4c3a;--gold:#fbbf24;--bg:#f0f2f5;--card-radius:12px;--shadow:0 4px 20px rgba(0,0,0,.08);--transition:all .25s cubic-bezier(.4,0,.2,1)}
+body{font-family:'Hind Siliguri','Cairo','Segoe UI',sans-serif;background:var(--bg);overflow-x:hidden;font-size:14px;transition:background .3s}
+body.rtl{direction:rtl;text-align:right;font-family:'Cairo','Hind Siliguri',sans-serif}
+#loginScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#0f4c3a,#1e7e34);overflow-y:auto;z-index:50}
+.login-card{width:100%;max-width:440px;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:slideUp .5s;max-height:95vh;display:flex;flex-direction:column}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.login-card.shake{animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.login-body{overflow-y:auto;flex:1}
+#sidebar{position:fixed;top:0;left:0;width:265px;height:100vh;background:linear-gradient(180deg,#0a3a2a 0%,#0f4c3a 50%,#1e7e34 100%);color:#fff;overflow-y:auto;z-index:1030;transition:var(--transition);-webkit-overflow-scrolling:touch}
+body.rtl #sidebar{left:auto;right:0}
+#sidebar::-webkit-scrollbar{width:6px}
+#sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px}
+#sidebar .brand{padding:18px 15px;text-align:center;border-bottom:1px solid rgba(255,255,255,.15)}
+#sidebar .brand h3{color:#fff;font-size:20px;margin:0}
+#sidebar .brand small{color:rgba(255,255,255,.75);font-size:10px;letter-spacing:1px;display:block;margin-top:3px}
+.menu-group{padding:8px 15px 3px;font-size:11px;text-transform:uppercase;color:rgba(255,255,255,.5);letter-spacing:1px;font-weight:600}
+#sidebar .nav-link{color:rgba(255,255,255,.85);padding:11px 18px;font-size:14px;display:flex;align-items:center;gap:10px;border-radius:8px;margin:2px 8px;transition:var(--transition);text-decoration:none;cursor:pointer;min-height:42px}
+#sidebar .nav-link:hover,#sidebar .nav-link.active{background:rgba(255,255,255,.18);color:#fff;transform:translateX(4px)}
+body.rtl #sidebar .nav-link:hover,body.rtl #sidebar .nav-link.active{transform:translateX(-4px)}
+#sidebar .nav-link i{width:18px;text-align:center;font-size:14px;flex-shrink:0}
+#mainApp{display:none}
+.main-content{margin-left:265px;padding:18px;min-height:100vh;transition:var(--transition)}
+body.rtl .main-content{margin-left:0;margin-right:265px}
+.mobile-toggle{display:none;position:fixed;bottom:20px;left:20px;z-index:1040;width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:22px;box-shadow:var(--shadow);transition:var(--transition);touch-action:manipulation}
+body.rtl .mobile-toggle{left:auto;right:20px}
+.mobile-toggle:active{transform:scale(.9)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1025;touch-action:none}
+@media(max-width:991px){#sidebar{transform:translateX(-100%);box-shadow:4px 0 20px rgba(0,0,0,.3)}body.rtl #sidebar{transform:translateX(100%)}#sidebar.open{transform:translateX(0)}.main-content{margin-left:0;padding:12px}body.rtl .main-content{margin-right:0}.mobile-toggle{display:block}.overlay.show{display:block}body.rtl .mobile-toggle{left:auto;right:20px}}
+@media(max-width:576px){.main-content{padding:10px}body{font-size:13px}#sidebar{width:280px}.card-body{padding:12px!important}.table{font-size:12px}.btn-sm{padding:6px 10px}.modal-dialog{margin:8px}.modal-body{padding:12px}h3{font-size:1.3rem}h4{font-size:1.1rem}h5{font-size:1rem}}
+.brand-gold{color:var(--gold);font-weight:700;letter-spacing:1px;text-shadow:0 0 20px rgba(251,191,36,.3)}
+.card-stats{border:none;border-radius:var(--card-radius);transition:var(--transition);cursor:pointer;position:relative;overflow:hidden}
+.card-stats:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.stats-icon{font-size:2rem;opacity:.25;position:absolute;right:15px;bottom:12px;transition:transform .3s}
+.card-stats:hover .stats-icon{transform:scale(1.2) rotate(5deg)}
+body.rtl .stats-icon{right:auto;left:15px}
+.card{border:none;border-radius:var(--card-radius);box-shadow:var(--shadow);transition:var(--transition)}
+.search-wrap{position:relative}
+.search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#999;z-index:5}
+body.rtl .search-wrap i{left:auto;right:14px}
+.search-wrap input{border-radius:22px;padding-left:40px}
+body.rtl .search-wrap input{padding-left:14px;padding-right:40px}
+.table-responsive{max-height:520px;overflow:auto;-webkit-overflow-scrolling:touch}
+.btn{transition:var(--transition);touch-action:manipulation;min-height:38px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.btn:active{transform:scale(.97)}
+.modal-header{background:linear-gradient(135deg,#0f4c3a,#1e7e34);color:#fff}
+.btn-success{background:var(--primary);border-color:var(--primary)}
+.btn-success:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+.btn-outline-success{color:var(--primary);border-color:var(--primary)}
+.btn-outline-success:hover{background:var(--primary);color:#fff}
+#toastContainer{position:fixed;top:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:10px;max-width:340px;pointer-events:none}
+body.rtl #toastContainer{right:auto;left:20px}
+@media(max-width:576px){#toastContainer{left:12px;right:12px;max-width:none;top:12px}}
+.app-toast{min-width:280px;padding:14px 18px;border-radius:12px;color:#fff;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;align-items:center;gap:10px;animation:slideInRight .4s;cursor:pointer;pointer-events:auto}
+@keyframes slideInRight{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+.app-toast.success{background:linear-gradient(135deg,#1e7e34,#28a745)}
+.app-toast.error{background:linear-gradient(135deg,#dc3545,#c82333)}
+.app-toast.warning{background:linear-gradient(135deg,#ffc107,#e0a800);color:#333}
+.app-toast.info{background:linear-gradient(135deg,#17a2b8,#138496)}
+.app-toast.fade-out{animation:fadeOutRight .4s forwards}
+@keyframes fadeOutRight{to{transform:translateX(120%);opacity:0}}
+.spinner-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:3000}
+.spinner{width:60px;height:60px;border:5px solid rgba(255,255,255,.3);border-top-color:#fbbf24;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.chat-toggle{position:fixed;bottom:20px;right:20px;z-index:1050;width:56px;height:56px;border-radius:50%;border:none;background:linear-gradient(135deg,#0f4c3a,#1e7e34);color:#fff;font-size:22px;box-shadow:var(--shadow);transition:var(--transition);animation:pulse 2s infinite;touch-action:manipulation}
+body.rtl .chat-toggle{right:auto;left:20px}
+@keyframes pulse{0%,100%{box-shadow:0 5px 20px rgba(0,0,0,.3)}50%{box-shadow:0 5px 20px rgba(0,0,0,.3),0 0 0 12px rgba(30,126,52,.15)}}
+.chat-window{position:fixed;bottom:85px;right:20px;width:370px;height:540px;max-height:calc(100vh - 120px);background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.25);display:none;flex-direction:column;overflow:hidden;z-index:1050}
+body.rtl .chat-window{right:auto;left:20px}
+.chat-window.open{display:flex}
+.chat-header{background:linear-gradient(135deg,#0f4c3a,#1e7e34);color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+.chat-messages{flex:1;overflow-y:auto;padding:12px;background:#f8f9fa}
+.chat-msg{margin-bottom:10px;padding:9px 13px;border-radius:13px;max-width:88%;font-size:13.5px;line-height:1.5;word-wrap:break-word}
+.chat-msg.user{background:var(--primary);color:#fff;margin-left:auto;border-bottom-right-radius:3px}
+.chat-msg.ai{background:#fff;color:#333;border:1px solid #e5e5e5;border-bottom-left-radius:3px}
+.chat-input-area{padding:10px;background:#fff;border-top:1px solid #eee;display:flex;gap:6px}
+.chat-input-area input{border-radius:22px}.chat-input-area button{border-radius:50%;width:44px;height:44px;flex-shrink:0}
+.typing-dots span{width:7px;height:7px;background:#999;border-radius:50%;display:inline-block;animation:bounce 1.4s infinite;margin-right:3px}
+.typing-dots span:nth-child(2){animation-delay:.2s}.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+@media(max-width:500px){.chat-window{width:calc(100% - 20px);right:10px;left:10px;height:70vh;bottom:80px}body.rtl .chat-window{right:10px;left:10px}}
+#qrReader{width:100%;border-radius:10px;overflow:hidden}
+.tab-pills .nav-link{color:var(--primary);font-weight:500;padding:8px 14px;font-size:13px;white-space:nowrap}
+.tab-pills .nav-link.active{background:var(--primary);color:#fff}
+.tab-pills{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.tab-pills::-webkit-scrollbar{height:4px}
+.tab-pills::-webkit-scrollbar-thumb{background:#ccc;border-radius:2px}
+.lang-switch{display:flex;gap:4px;background:rgba(255,255,255,.1);padding:4px;border-radius:8px;margin:8px 14px}
+.lang-switch button{flex:1;background:transparent;border:none;color:rgba(255,255,255,.7);padding:8px;border-radius:6px;font-size:12px;font-weight:600;transition:var(--transition);cursor:pointer;touch-action:manipulation}
+.lang-switch button.active{background:var(--gold);color:#333}
+.lang-switch button:hover{color:#fff}
+.notif-bell{position:relative;background:rgba(255,255,255,.15);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:18px;cursor:pointer;transition:var(--transition);margin-right:8px;touch-action:manipulation}
+.notif-bell:hover{background:rgba(255,255,255,.25);transform:scale(1.05)}
+.notif-badge{position:absolute;top:-4px;right:-4px;background:#dc3545;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center;animation:pulseBadge 2s infinite}
+@keyframes pulseBadge{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.notification-panel{max-width:calc(100vw - 40px)}
+@media(max-width:500px){.notification-panel{left:12px!important;right:12px!important;width:auto!important;top:60px!important}}
+.backup-item{padding:12px;border:1px solid #e5e5e5;border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;transition:var(--transition)}
+.backup-item:hover{background:#f8f9fa;border-color:var(--primary)}
+.backup-item .info{flex:1;min-width:150px}
+.backup-item .info strong{display:block;font-size:13px}
+.backup-item .info small{color:#666;font-size:11px}
+.pwd-strength{height:6px;border-radius:3px;background:#e5e5e5;overflow:hidden;margin-top:6px}
+.pwd-strength-bar{height:100%;width:0;transition:all .3s;border-radius:3px}
+@media print{#sidebar,.chat-toggle,.chat-window,.no-print,.mobile-toggle,.overlay,#toastContainer,.notif-bell,.notification-panel{display:none!important}.main-content{margin:0!important;padding:0!important}}
+.touch-target{min-height:44px;min-width:44px}
+input.form-control,input.form-select{min-height:40px}
+@media(max-width:576px){input.form-control,input.form-select{font-size:16px!important}}
+</style>
+</head>
+<body>
+
+<div id="toastContainer"></div>
+<div id="notificationPanel" class="notification-panel" style="display:none;position:fixed;top:70px;right:20px;width:380px;max-height:500px;background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.25);z-index:1500;overflow:hidden">
+<div style="background:linear-gradient(135deg,#0f4c3a,#1e7e34);color:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center">
+<strong><i class="fas fa-bell"></i> Notifications</strong>
+<button class="btn btn-sm text-white" onclick="document.getElementById('notificationPanel').style.display='none'"><i class="fas fa-times"></i></button>
+</div>
+<div id="notificationList" style="max-height:420px;overflow-y:auto;padding:8px"></div>
+</div>
+
+<div id="loginScreen">
+<div class="login-card" id="loginCard">
+<div style="background:linear-gradient(135deg,#0f4c3a,#1e7e34);color:#fff;padding:26px 20px;text-align:center">
+<h2 style="margin:0 0 4px;font-size:24px"><i class="fas fa-store"></i> <span class="brand-gold">RST</span> ELECTRONICS</h2>
+<small style="opacity:.9;font-size:11px" id="loginSub">AL WAHA AL KHDRA AL MUTAKAMILAH TRADING</small>
+<hr style="margin:10px 0;border-color:rgba(255,255,255,.3)">
+<small style="opacity:.85;font-size:11px" id="loginInfo">CR: 1374092 | Mabellah Sanaya, Oman<br>+968 9430 1393</small>
+</div>
+<div class="login-body" style="padding:24px 22px">
+<div id="loginError" class="alert alert-danger d-none" style="font-size:13px">❌ ভুল ইউজারনেম বা পাসওয়ার্ড!</div>
+<form id="loginForm">
+<div class="mb-3"><label class="form-label"><i class="fas fa-user"></i> <span data-i18n="username">ইউজারনেম</span></label><input type="text" id="loginUsername" class="form-control form-control-lg" required autocomplete="username"></div>
+<div class="mb-3"><label class="form-label"><i class="fas fa-lock"></i> <span data-i18n="password">পাসওয়ার্ড</span></label><input type="password" id="loginPassword" class="form-control form-control-lg" required autocomplete="current-password"></div>
+<button type="submit" class="btn btn-success btn-lg w-100" style="border-radius:22px"><i class="fas fa-sign-in-alt"></i> <span data-i18n="login">লগইন</span></button>
+</form>
+<div class="text-center mt-2"><a href="#" onclick="event.preventDefault();openForgotPassword()" style="font-size:13px;color:var(--primary);text-decoration:none"><i class="fas fa-key"></i> Forgot Password?</a></div>
+<hr style="margin:16px 0">
+<div class="text-center">
+<div class="lang-switch-login mb-2 d-flex gap-2">
+<button onclick="setLang('bn')" id="lbtn_bn" class="btn btn-sm btn-outline-success flex-fill">বাংলা</button>
+<button onclick="setLang('en')" id="lbtn_en" class="btn btn-sm btn-outline-success flex-fill">English</button>
+<button onclick="setLang('ar')" id="lbtn_ar" class="btn btn-sm btn-outline-success flex-fill">العربية</button>
+</div>
+<small class="text-muted">ডেমো: <code>admin/admin123</code> | <code>staff/admin123</code></small>
+</div>
+</div>
+<div style="background:#f8f9fa;padding:10px;text-align:center;font-size:11px;color:#666"><i class="fas fa-phone"></i> +968 9430 1393 | <i class="fas fa-robot"></i> Gemini AI</div>
+</div>
+</div>
+
+<div id="mainApp">
+<div id="sidebar">
+<div class="brand"><h3><span class="brand-gold">RST</span></h3><small data-i18n="brand_sub">ELECTRONICS ERP</small></div>
+<div class="lang-switch">
+<button onclick="setLang('bn')" id="lb_bn">বা</button>
+<button onclick="setLang('en')" id="lb_en">EN</button>
+<button onclick="setLang('ar')" id="lb_ar">ع</button>
+</div>
+<div class="menu-group" data-i18n="menu_main">প্রধান</div>
+<ul class="nav flex-column" style="list-style:none">
+<li><a class="nav-link" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> <span data-i18n="dashboard">ড্যাশবোর্ড</span></a></li>
+<li><a class="nav-link" data-page="pos"><i class="fas fa-cash-register"></i> <span data-i18n="pos">সেলস / POS</span></a></li>
+</ul>
+<div class="menu-group" data-i18n="menu_inventory">ইনভেন্টরি</div>
+<ul class="nav flex-column" style="list-style:none">
+<li><a class="nav-link" data-page="products"><i class="fas fa-box"></i> <span data-i18n="products">প্রোডাক্ট</span></a></li>
+<li><a class="nav-link" data-page="categories"><i class="fas fa-tags"></i> <span data-i18n="categories">ক্যাটাগরি</span></a></li>
+<li><a class="nav-link" data-page="stock"><i class="fas fa-warehouse"></i> <span data-i18n="stock">স্টক রিপোর্ট</span></a></li>
+<li><a class="nav-link" data-page="barcode"><i class="fas fa-barcode"></i> <span data-i18n="barcode">বারকোড জেনারেটর</span></a></li>
+<li><a class="nav-link" data-page="transfer"><i class="fas fa-exchange-alt"></i> <span data-i18n="transfer">আইটেম ট্রান্সফার</span></a></li>
+<li><a class="nav-link" data-page="imei"><i class="fas fa-mobile-alt"></i> <span data-i18n="imei">IMEI চেক</span></a></li>
+<li><a class="nav-link" data-page="damage"><i class="fas fa-exclamation-triangle"></i> <span data-i18n="damage">ড্যামেজ</span></a></li>
+</ul>
+<div class="menu-group" data-i18n="menu_trade">ক্রয়-বিক্রয়</div>
+<ul class="nav flex-column" style="list-style:none">
+<li><a class="nav-link" data-page="purchase"><i class="fas fa-shopping-bag"></i> <span data-i18n="purchase">পারচেস</span></a></li>
+<li><a class="nav-link" data-page="sales"><i class="fas fa-file-invoice"></i> <span data-i18n="sales">সেলস রিপোর্ট</span></a></li>
+</ul>
+<div class="menu-group" data-i18n="menu_cust">কাস্টমার</div>
+<ul class="nav flex-column" style="list-style:none">
+<li><a class="nav-link" data-page="customers"><i class="fas fa-users"></i> <span data-i18n="customers">কাস্টমার</span></a></li>
+</ul>
+<div class="menu-group" data-i18n="menu_util">ইউটিলিটি</div>
+<ul class="nav flex-column" style="list-style:none">
+<li><a class="nav-link" data-page="utilityBills"><i class="fas fa-bolt"></i> <span data-i18n="util">ইউটিলিটি বিল</span></a></li>
+<li><a class="nav-link" data-page="recharge"><i class="fas fa-mobile"></i> <span data-i18n="recharge">রিচার্জ</span></a></li>
+</ul>
+<div class="menu-group" data-i18n="menu_acc">হিসাব</div>
+<ul class="nav flex-column" style="list-style:none">
+<li><a class="nav-link" data-page="accounts"><i class="fas fa-chart-line"></i> <span data-i18n="accounts">মুনাফা/ক্ষতি</span></a></li>
+<li><a class="nav-link" data-page="cashbook"><i class="fas fa-book"></i> <span data-i18n="cashbook">ক্যাশবুক</span></a></li>
+<li><a class="nav-link" data-page="banking"><i class="fas fa-university"></i> <span data-i18n="banking">ব্যাংকিং</span></a></li>
+</ul>
+<div class="menu-group" data-i18n="menu_hr">HR</div>
+<ul class="nav flex-column" style="list-style:none">
+<li><a class="nav-link" data-page="employees"><i class="fas fa-user-tie"></i> <span data-i18n="emp">এমপ্লয়ি</span></a></li>
+<li><a class="nav-link" data-page="attendance"><i class="fas fa-calendar-check"></i> <span data-i18n="att">হাজিরা</span></a></li>
+<li><a class="nav-link" data-page="salary"><i class="fas fa-money-check"></i> <span data-i18n="sal">বেতন</span></a></li>
+<li><a class="nav-link" data-page="branches"><i class="fas fa-building"></i> <span data-i18n="branch">ব্রাঞ্চ</span></a></li>
+</ul>
+<div class="menu-group" data-i18n="menu_adv">অ্যাডভান্সড</div>
+<ul class="nav flex-column" style="list-style:none">
+<li><a class="nav-link" data-page="warranty"><i class="fas fa-shield-alt"></i> <span data-i18n="warranty">ওয়ারেন্টি</span></a></li>
+<li><a class="nav-link" data-page="installment"><i class="fas fa-hand-holding-usd"></i> <span data-i18n="installment">কিস্তি</span></a></li>
+<li><a class="nav-link" data-page="target"><i class="fas fa-bullseye"></i> <span data-i18n="target">টার্গেট</span></a></li>
+<li><a class="nav-link" data-page="notifications"><i class="fas fa-bell"></i> 🔔 নোটিফিকেশন</a></li>
+<li><a class="nav-link" data-page="businessStudio"><i class="fas fa-id-card"></i> <span data-i18n="studio">বিজনেস স্টুডিও</span></a></li>
+</ul>
+<div class="menu-group" data-i18n="menu_admin">অ্যাডমিন</div>
+<ul class="nav flex-column pb-3" style="list-style:none">
+<li><a class="nav-link" data-page="profile"><i class="fas fa-user-circle"></i> My Profile</a></li>
+<li class="admin-only"><a class="nav-link" data-page="users"><i class="fas fa-user-shield"></i> <span data-i18n="users">ইউজার</span></a></li>
+<li class="admin-only"><a class="nav-link" data-page="audit"><i class="fas fa-history"></i> <span data-i18n="audit">অডিট</span></a></li>
+<li class="admin-only"><a class="nav-link" data-page="backup"><i class="fas fa-database"></i> <span data-i18n="backup">ব্যাকআপ</span></a></li>
+<li class="admin-only"><a class="nav-link" data-page="trash"><i class="fas fa-trash-restore"></i> <span data-i18n="trash">রিসাইকেল</span></a></li>
+<li><a class="nav-link" data-page="settings"><i class="fas fa-cog"></i> <span data-i18n="settings">সেটিংস</span></a></li>
+<li><a class="nav-link" id="logoutBtn" style="color:#ff8a8a"><i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">লগআউট</span></a></li>
+</ul>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+<div class="main-content">
+<div style="display:flex;justify-content:flex-end;margin-bottom:10px;gap:8px;align-items:center">
+<small id="backupIndicator" class="text-muted d-none d-md-block" style="font-size:11px"></small>
+<button class="notif-bell" onclick="toggleNotifPanel()"><i class="fas fa-bell"></i><span class="notif-badge" id="notifBadge" style="display:none">0</span></button>
+</div>
+<div id="pageContent"></div>
+</div>
+</div>
+
+<div class="modal fade" id="scannerModal" tabindex="-1" data-bs-backdrop="static">
+<div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content">
+<div class="modal-header"><h5 class="modal-title"><i class="fas fa-barcode"></i> <span data-i18n="scanner">বারকোড স্ক্যানার</span></h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+<div class="modal-body"><div id="qrReader"></div><div class="alert alert-info mt-3 mb-2"><i class="fas fa-info-circle"></i> <span id="scannerStatus">...</span></div>
+<label class="form-label mt-2"><strong data-i18n="manual_entry">ম্যানুয়ালি লিখুন:</strong></label>
+<div class="input-group"><input type="text" id="manualBarcode" class="form-control" placeholder="Barcode..."><button class="btn btn-success" onclick="handleManualBarcode()"><i class="fas fa-check"></i></button></div>
+</div>
+</div></div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal fade" id="forgotPwdModal" tabindex="-1" data-bs-backdrop="static">
+<div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+<div class="modal-header"><h5 class="modal-title"><i class="fas fa-key"></i> Forgot Password</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+<div id="forgotStep1">
+<label class="small">Enter your registered email:</label>
+<input type="email" id="forgotEmail" class="form-control mb-2" placeholder="your@email.com">
+<button class="btn btn-success w-100" onclick="doRequestReset()"><i class="fas fa-paper-plane"></i> Send Reset Code</button>
+<small class="text-muted d-block mt-2">We'll send a 6-digit code to your email (if EmailJS configured). Otherwise the code shows on screen.</small>
+</div>
+<div id="forgotStep2" class="d-none">
+<label class="small">Enter 6-digit code:</label>
+<input type="text" id="forgotCode" class="form-control mb-2" placeholder="123456" maxlength="6" inputmode="numeric">
+<label class="small">New password (min 6 chars):</label>
+<input type="password" id="forgotNewPwd" class="form-control mb-2" oninput="checkPwdStrength(this.value,'forgotStrength')">
+<div class="pwd-strength mb-2"><div id="forgotStrength" class="pwd-strength-bar"></div></div>
+<label class="small">Confirm password:</label>
+<input type="password" id="forgotNewPwd2" class="form-control mb-3">
+<button class="btn btn-success w-100" onclick="doCompleteReset()"><i class="fas fa-check"></i> Reset Password</button>
+<button class="btn btn-link w-100 mt-1" onclick="backToForgotStep1()">← Back</button>
+</div>
+<div id="forgotResult"></div>
+</div>
+</div></div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal fade" id="changePwdModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+<div class="modal-header"><h5 class="modal-title"><i class="fas fa-lock"></i> Change Password</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+<input type="hidden" id="cpUserId">
+<label class="small">Current password:</label>
+<input type="password" id="cpCurrent" class="form-control mb-2">
+<label class="small">New password:</label>
+<input type="password" id="cpNew" class="form-control mb-2" oninput="checkPwdStrength(this.value,'cpStrength')">
+<div class="pwd-strength mb-2"><div id="cpStrength" class="pwd-strength-bar"></div></div>
+<label class="small">Confirm new password:</label>
+<input type="password" id="cpConfirm" class="form-control mb-3">
+<div id="cpResult"></div>
+<button class="btn btn-success w-100" onclick="doChangePassword()"><i class="fas fa-check"></i> Update Password</button>
+</div>
+</div></div>
+</div>
+
+<button class="chat-toggle no-print" id="chatToggle"><i class="fas fa-robot"></i></button>
+<div class="chat-window no-print" id="chatWindow">
+<div class="chat-header"><div><i class="fas fa-robot"></i> <strong>RST AI</strong><small class="d-block" style="font-size:10px;opacity:.9" id="aiModelLabel">Gemini</small></div><button class="btn btn-sm text-white" id="chatClose"><i class="fas fa-times"></i></button></div>
+<div class="chat-messages" id="chatMessages"><div class="chat-msg ai">👋 RST AI। প্রশ্ন করুন!</div></div>
+<div class="chat-input-area"><input type="text" id="chatInput" class="form-control" placeholder="প্রশ্ন..." onkeypress="if(event.key==='Enter')sendToAI()"><button class="btn btn-success" onclick="sendToAI()"><i class="fas fa-paper-plane"></i></button></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ================= CONFIG =================
+const GEMINI_MODELS=['gemini-2.0-flash','gemini-1.5-flash','gemini-1.5-flash-8b'];
+let currentUser=null,currentLang=localStorage.getItem('lang')||'bn';
+let geminiApiKey=localStorage.getItem('gemini_api_key')||'';
+let geminiWorkingModel=localStorage.getItem('gemini_model')||GEMINI_MODELS[0];
+let scannerInstance=null,scannerTarget='pos',chatHistory=[];
+let soundEnabled=localStorage.getItem('sound_enabled')!=='false';
+let animationEnabled=localStorage.getItem('animation_enabled')!=='false';
+
+const defaultConfig={
+  business_name:'RST ELECTRONICS',legal_name:'AL WAHA AL KHDRA AL MUTAKAMILAH TRADING',
+  cr_no:'1374092',address:'Mabellah Sanaya, Road No 6, Sultanate of Oman',
+  phone:'+968 9430 1393',email:'Eletrocnisrst@gmail.com',
+  currency:'OMR',currency_symbol:'ر.ع.',vatRate:0.05,vatEnabled:true,decimalPlaces:3,
+  theme:'green',soundEnabled:true,animationEnabled:true,invoice_prefix:'RST',lowStockAlert:5,dateFormat:'en-GB',
+  notif_browser:true,notif_email:false,notif_sms:false,notif_sound:true,
+  notif_on_sale:true,notif_on_lowstock:true,notif_on_purchase:true,notif_on_payment:true,
+  emailjs_service:'',emailjs_template:'',emailjs_public:'',
+  fast2sms_key:'',
+  admin_emails:['Eletrocnisrst@gmail.com'],
+  admin_phone:'',admin_whatsapp:'',
+  notify_admin_on_sale:true,notify_branch_on_sale:false,notify_customer_on_sale:false,
+  auto_barcode:true,auto_imei:true,auto_serial:true,
+  auto_backup_enabled:true,auto_backup_interval:5,auto_backup_max:10
+};
+let CONFIG=Object.assign({},defaultConfig,JSON.parse(localStorage.getItem('config')||'{}'));
+if(!Array.isArray(CONFIG.admin_emails))CONFIG.admin_emails=[CONFIG.admin_email||defaultConfig.email].filter(Boolean);
+function saveConfig(){localStorage.setItem('config',JSON.stringify(CONFIG));}
+function getBusiness(){return CONFIG;}
+
+// ================= NOTIFICATIONS =================
+let notifications=JSON.parse(localStorage.getItem('notifications')||'[]');
+function pushNotification(title,body,type='info',sendChannels=true){
+  const n={id:Date.now(),title,body,type,time:new Date().toLocaleString(CONFIG.dateFormat),read:false};
+  notifications.unshift(n);
+  if(notifications.length>200)notifications=notifications.slice(0,200);
+  localStorage.setItem('notifications',JSON.stringify(notifications));
+  updateNotifBadge();
+  if(sendChannels)sendMultiChannel(title,body,type);
+  return n;
+}
+function updateNotifBadge(){
+  const unread=notifications.filter(n=>!n.read).length;
+  const badge=document.getElementById('notifBadge');
+  if(badge){badge.style.display=unread>0?'block':'none';badge.textContent=unread;}
+}
+function toggleNotifPanel(){
+  const panel=document.getElementById('notificationPanel');
+  const isOpen=panel.style.display==='block';
+  panel.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    notifications.forEach(n=>n.read=true);
+    localStorage.setItem('notifications',JSON.stringify(notifications));
+    updateNotifBadge();
+    renderNotifList();
+  }
+}
+function renderNotifList(){
+  const list=document.getElementById('notificationList');
+  if(!notifications.length){list.innerHTML='<div class="text-center text-muted py-4">No notifications</div>';return;}
+  const icons={sale:'shopping-cart',stock:'exclamation-triangle',purchase:'shopping-bag',payment:'money-bill',info:'info-circle',error:'exclamation-circle'};
+  list.innerHTML=notifications.slice(0,50).map(n=>`
+    <div style="padding:10px;border-bottom:1px solid #eee;display:flex;gap:10px">
+      <div style="width:36px;height:36px;background:${n.type==='sale'?'#1e7e34':n.type==='stock'?'#ffc107':n.type==='error'?'#dc3545':'#17a2b8'};color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i class="fas fa-${icons[n.type]||'bell'}"></i>
+      </div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px">${esc(n.title)}</div>
+        <div style="font-size:12px;color:#666;margin-top:2px">${esc(n.body)}</div>
+        <div style="font-size:10px;color:#999;margin-top:4px">${esc(n.time)}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function sendMultiChannel(title,body,type='info'){
+  if(CONFIG.notif_browser&&'Notification' in window&&Notification.permission==='granted'){
+    try{new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%231e7e34" width="100" height="100" rx="20"/><text x="50" y="65" font-size="50" text-anchor="middle" fill="white" font-family="Arial" font-weight="bold">R</text></svg>'});}catch(e){}
+  }
+  if(CONFIG.notif_email&&CONFIG.emailjs_service&&CONFIG.emailjs_public&&CONFIG.emailjs_template){
+    try{
+      const recipient=CONFIG.admin_emails[0]||CONFIG.email;
+      if(recipient){
+        await emailjs.send(CONFIG.emailjs_service,CONFIG.emailjs_template,{
+          to_email:recipient,to_name:'RST Admin',subject:title,message:body,
+          business:CONFIG.business_name,time:new Date().toLocaleString()
+        },CONFIG.emailjs_public);
+      }
+    }catch(e){console.warn('Email failed:',e);}
+  }
+  if(CONFIG.notif_sound)SoundEngine.notify();
+}
+
+window.requestNotifPermission=async()=>{
+  if(!('Notification' in window)){toast('Browser does not support notifications','warning');return;}
+  const perm=await Notification.requestPermission();
+  if(perm==='granted'){
+    toast('✅ Notifications enabled!','success');
+    SoundEngine.success();
+    new Notification('RST ELECTRONICS',{body:'Notifications enabled successfully! 🎉'});
+    localStorage.setItem('notif_permission','granted');
+  }else{toast('Notification permission denied','warning');}
+};
+function checkNotifPermission(){
+  if(!('Notification' in window))return;
+  if(Notification.permission==='default'&&currentUser)setTimeout(()=>{if(confirm('Enable browser notifications for alerts?'))requestNotifPermission();},3000);
+}
+
+// ================= AUTO BACKUP SYSTEM =================
+const AUTO_BACKUP_KEY='auto_backups';
+let autoBackupTimer=null;
+let lastAutoBackupTime=null;
+
+function getAllDataSnapshot(){
+  return {
+    products,customers,invoices,purchases,incomeExpense,cashTransfers,bankTransactions,
+    employees,attendance,salaries,branches,itemTransfers,damageEntries,warranties,
+    installments,targets,smsLogs,utilityBills,recharges,categories,brands,
+    auditLogs,users,notifications,config:CONFIG,nextId,
+    gemini_api_key:geminiApiKey
+  };
+}
+function performAutoBackup(reason='auto'){
+  if(!CONFIG.auto_backup_enabled)return false;
+  try{
+    const backup={id:Date.now(),timestamp:new Date().toISOString(),reason,size:0,data:getAllDataSnapshot()};
+    const serialized=JSON.stringify(backup.data);
+    backup.size=serialized.length;
+    let backups=ls(AUTO_BACKUP_KEY,[]);
+    backups.unshift(backup);
+    if(backups.length>CONFIG.auto_backup_max)backups=backups.slice(0,CONFIG.auto_backup_max);
+    localStorage.setItem(AUTO_BACKUP_KEY,JSON.stringify(backups));
+    lastAutoBackupTime=new Date();
+    updateBackupIndicator();
+    if(reason==='manual')logAudit('Manual backup created','backup',backup.id);
+    return true;
+  }catch(e){
+    console.warn('Auto backup failed:',e);
+    if(e.name==='QuotaExceededError'){let b=ls(AUTO_BACKUP_KEY,[]);b=b.slice(0,Math.max(1,Math.floor(b.length/2)));localStorage.setItem(AUTO_BACKUP_KEY,JSON.stringify(b));}
+    return false;
+  }
+}
+function startAutoBackup(){
+  if(autoBackupTimer)clearInterval(autoBackupTimer);
+  if(!CONFIG.auto_backup_enabled)return;
+  const mins=Math.max(1,CONFIG.auto_backup_interval||5);
+  autoBackupTimer=setInterval(()=>performAutoBackup('auto'),mins*60*1000);
+  updateBackupIndicator();
+}
+function updateBackupIndicator(){
+  const el=document.getElementById('backupIndicator');
+  if(!el)return;
+  const backups=ls(AUTO_BACKUP_KEY,[]);
+  if(!backups.length){el.innerHTML='<i class="fas fa-circle text-warning" style="font-size:8px"></i> No backups';return;}
+  const last=new Date(backups[0].timestamp);
+  const mins=Math.round((Date.now()-last.getTime())/60000);
+  el.innerHTML=`<i class="fas fa-circle text-success" style="font-size:8px"></i> Backup: ${mins<1?'just now':mins+'m ago'}`;
+}
+function restoreFromBackup(backupId){
+  const backups=ls(AUTO_BACKUP_KEY,[]);
+  const bk=backups.find(b=>b.id===backupId);
+  if(!bk)return toast('Backup not found','error');
+  if(!confirm(`Restore backup from ${new Date(bk.timestamp).toLocaleString()}?\n\nThis will REPLACE all current data.`))return;
+  try{
+    const d=bk.data;
+    ['products','customers','invoices','purchases','incomeExpense','cashTransfers','bankTransactions',
+     'employees','attendance','salaries','branches','itemTransfers','damageEntries','warranties',
+     'installments','targets','smsLogs','utilityBills','recharges','categories','brands',
+     'auditLogs','users','notifications'].forEach(k=>{if(Array.isArray(d[k]))save(k,d[k]);});
+    if(d.config){CONFIG=Object.assign({},defaultConfig,d.config);saveConfig();}
+    if(d.gemini_api_key)localStorage.setItem('gemini_api_key',d.gemini_api_key);
+    if(d.nextId)nextId=d.nextId;
+    SoundEngine.success();
+    toast('✅ Backup restored! Reloading...','success');
+    setTimeout(()=>location.reload(),1200);
+  }catch(e){SoundEngine.error();toast('Restore failed: '+e.message,'error');}
+}
+function deleteBackup(backupId){
+  let backups=ls(AUTO_BACKUP_KEY,[]);
+  backups=backups.filter(b=>b.id!==backupId);
+  save(AUTO_BACKUP_KEY,backups);
+  updateBackupIndicator();
+  toast('Backup deleted','info');
+}
+
+// ================= AUTO GENERATORS =================
+function generateEAN13(){
+  let base='890'+String(Date.now()).slice(-9);
+  let sum=0;
+  for(let i=0;i<12;i++){sum+=parseInt(base[i])*(i%2===0?1:3);}
+  const check=(10-(sum%10))%10;
+  return base+check;
+}
+function generateIMEI(){
+  let imei='35'+String(Date.now()).slice(-12);
+  let sum=0;
+  for(let i=0;i<14;i++){let d=parseInt(imei[i]);if(i%2===1){d*=2;if(d>9)d-=9;}sum+=d;}
+  const check=(10-(sum%10))%10;
+  return imei+check;
+}
+function generateSerial(prefix='SN'){
+  const ts=Date.now().toString(36).toUpperCase();
+  const rnd=Math.random().toString(36).substring(2,6).toUpperCase();
+  return `${prefix}-${ts}-${rnd}`;
+}
+
+// ================= SOUND =================
+const SoundEngine={
+  ctx:null,
+  init(){try{this.ctx=this.ctx||new (window.AudioContext||window.webkitAudioContext)();}catch(e){}},
+  play(freq,dur,type='sine',vol=0.1){if(!soundEnabled)return;this.init();if(!this.ctx)return;try{const o=this.ctx.createOscillator();const g=this.ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+dur);o.connect(g);g.connect(this.ctx.destination);o.start();o.stop(this.ctx.currentTime+dur);}catch(e){}},
+  success(){this.play(880,.15);setTimeout(()=>this.play(1320,.2),100);},
+  error(){this.play(200,.3,'sawtooth',.15);},
+  warning(){this.play(400,.2,'square',.1);},
+  beep(){this.play(1000,.1);},
+  click(){this.play(600,.05,'sine',.05);},
+  scan(){this.play(1200,.08);setTimeout(()=>this.play(1600,.1),80);},
+  notify(){this.play(660,.15);setTimeout(()=>this.play(880,.2),120);}
+};
+
+// ================= TOAST =================
+function toast(msg,type='success',dur=3000){
+  const el=document.createElement('div');el.className=`app-toast ${type}`;
+  const icons={success:'check-circle',error:'exclamation-circle',warning:'exclamation-triangle',info:'info-circle'};
+  el.innerHTML=`<i class="fas fa-${icons[type]||'info-circle'}"></i> <span>${esc(msg)}</span>`;
+  el.onclick=()=>el.remove();
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},dur);
+}
+
+// ================= HELPERS =================
+function ls(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v===null?d:v}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){console.warn('save fail',k,e)}}
+function fmt(n){return Number(n||0).toFixed(CONFIG.decimalPlaces)}
+function cur(){return CONFIG.currency_symbol+' '}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function confirmDialog(msg,cb){if(confirm(msg)){SoundEngine.click();cb();}else{SoundEngine.error();}}
+function showSpinner(){const d=document.createElement('div');d.id='globalSpinner';d.className='spinner-overlay';d.innerHTML='<div class="spinner"></div>';document.body.appendChild(d);}
+function hideSpinner(){document.getElementById('globalSpinner')?.remove();}
+function checkPwdStrength(pwd,elId){
+  const el=document.getElementById(elId);if(!el)return;
+  let score=0;
+  if(pwd.length>=6)score++;
+  if(pwd.length>=10)score++;
+  if(/[A-Z]/.test(pwd)&&/[a-z]/.test(pwd))score++;
+  if(/\d/.test(pwd))score++;
+  if(/[^A-Za-z0-9]/.test(pwd))score++;
+  const colors=['#dc3545','#fd7e14','#ffc107','#20c997','#1e7e34'];
+  const pct=[10,30,55,80,100];
+  el.style.width=pct[Math.min(score,4)]+'%';
+  el.style.background=colors[Math.min(score,4)];
+}
+
+// ================= i18n =================
+const i18n={
+bn:{dashboard:'ড্যাশবোর্ড',pos:'সেলস / POS',products:'প্রোডাক্ট',categories:'ক্যাটাগরি',stock:'স্টক',barcode:'বারকোড',transfer:'ট্রান্সফার',imei:'IMEI',damage:'ড্যামেজ',purchase:'পারচেস',sales:'সেলস',customers:'কাস্টমার',util:'ইউটিলিটি',recharge:'রিচার্জ',accounts:'মুনাফা',cashbook:'ক্যাশবুক',banking:'ব্যাংকিং',emp:'এমপ্লয়ি',att:'হাজিরা',sal:'বেতন',branch:'ব্রাঞ্চ',warranty:'ওয়ারেন্টি',installment:'কিস্তি',target:'টার্গেট',studio:'স্টুডিও',users:'ইউজার',audit:'অডিট',backup:'ব্যাকআপ',trash:'রিসাইকেল',settings:'সেটিংস',logout:'লগআউট',username:'ইউজারনেম',password:'পাসওয়ার্ড',login:'লগইন',brand_sub:'ELECTRONICS ERP',menu_main:'প্রধান',menu_inventory:'ইনভেন্টরি',menu_trade:'ক্রয়-বিক্রয়',menu_cust:'কাস্টমার',menu_util:'ইউটিলিটি',menu_acc:'হিসাব',menu_hr:'HR',menu_adv:'অ্যাডভান্সড',menu_admin:'অ্যাডমিন',scanner:'স্ক্যানার',manual_entry:'ম্যানুয়ালি',welcome:'স্বাগতম',save:'সংরক্ষণ',cancel:'বাতিল',confirm_delete:'নিশ্চিত?'},
+en:{dashboard:'Dashboard',pos:'Sales / POS',products:'Products',categories:'Categories',stock:'Stock',barcode:'Barcode',transfer:'Transfer',imei:'IMEI',damage:'Damage',purchase:'Purchase',sales:'Sales',customers:'Customers',util:'Utilities',recharge:'Recharge',accounts:'Profit',cashbook:'Cashbook',banking:'Banking',emp:'Employees',att:'Attendance',sal:'Salary',branch:'Branches',warranty:'Warranty',installment:'Installment',target:'Target',studio:'Studio',users:'Users',audit:'Audit',backup:'Backup',trash:'Recycle',settings:'Settings',logout:'Logout',username:'Username',password:'Password',login:'Login',brand_sub:'ELECTRONICS ERP',menu_main:'MAIN',menu_inventory:'INVENTORY',menu_trade:'TRADE',menu_cust:'CUSTOMER',menu_util:'UTILITY',menu_acc:'ACCOUNTS',menu_hr:'HR',menu_adv:'ADVANCED',menu_admin:'ADMIN',scanner:'Scanner',manual_entry:'Manual',welcome:'Welcome',save:'Save',cancel:'Cancel',confirm_delete:'Confirm?'},
+ar:{dashboard:'لوحة التحكم',pos:'نقطة البيع',products:'المنتجات',categories:'الفئات',stock:'المخزون',barcode:'الباركود',transfer:'نقل',imei:'IMEI',damage:'التلف',purchase:'الشراء',sales:'المبيعات',customers:'العملاء',util:'المرافق',recharge:'شحن',accounts:'الأرباح',cashbook:'الصندوق',banking:'البنك',emp:'الموظفين',att:'الحضور',sal:'الراتب',branch:'الفروع',warranty:'الضمان',installment:'التقسيد',target:'الهدف',studio:'الاستوديو',users:'المستخدمين',audit:'السجلات',backup:'النسخ',trash:'المحذوفات',settings:'الإعدادات',logout:'خروج',username:'اسم المستخدم',password:'كلمة المرور',login:'تسجيل الدخول',brand_sub:'ELECTRONICS ERP',menu_main:'رئيسي',menu_inventory:'المخزون',menu_trade:'التجارة',menu_cust:'العملاء',menu_util:'المرافق',menu_acc:'الحسابات',menu_hr:'الموارد',menu_adv:'متقدم',menu_admin:'المشرف',scanner:'ماسح',manual_entry:'يدوي',welcome:'مرحبا',save:'حفظ',cancel:'إلغاء',confirm_delete:'تأكيد؟'}
+};
+function t(k){return i18n[currentLang][k]||i18n.en[k]||k;}
+
+// ================= DATA =================
+let products=ls('products',[
+{id:1,name:'iPhone 15 Pro',brand:'Apple',category:'Mobile',cost:850,price:999,stock:10,barcode:'8901234567890',imei:'356789123456789',serial:'SN-IP15-001',is_deleted:false},
+{id:2,name:'Samsung Galaxy S24',brand:'Samsung',category:'Mobile',cost:650,price:799,stock:8,barcode:'8901234567891',imei:'987654321123456',serial:'SN-SG24-001',is_deleted:false},
+{id:3,name:'Sony WH-1000XM5',brand:'Sony',category:'Headphone',cost:280,price:349,stock:15,barcode:'8901234567892',serial:'SN-SNY-001',is_deleted:false}
+]);
+let customers=ls('customers',[{id:1,name:'Ahmed Al Balushi',phone:'99887766',email:'ahmed@email.com',balance:0,is_deleted:false}]);
+let invoices=ls('invoices',[]);
+let purchases=ls('purchases',[]);
+let incomeExpense=ls('income_expense',[]);
+let cashTransfers=ls('cash_transfers',[]);
+let bankTransactions=ls('bank_transactions',[]);
+let employees=ls('employees',[]);
+let attendance=ls('attendance',[]);
+let salaries=ls('salaries',[]);
+let branches=ls('branches',[{id:1,name:'Main Branch',address:'Mabellah Sanaya, Oman',phone:'94301393',is_active:true}]);
+let itemTransfers=ls('item_transfers',[]);
+let damageEntries=ls('damage_entries',[]);
+let warranties=ls('warranties',[]);
+let installments=ls('installments',[]);
+let targets=ls('targets',[]);
+let smsLogs=ls('sms_logs',[]);
+let utilityBills=ls('utility_bills',[]);
+let recharges=ls('recharges',[]);
+let categories=ls('categories',[{id:1,name:'Mobile'},{id:2,name:'TV'},{id:3,name:'Headphone'}]);
+let brands=ls('brands',[{id:1,name:'Apple'},{id:2,name:'Samsung'},{id:3,name:'Sony'}]);
+let auditLogs=ls('audit_logs',[]);
+let users=ls('users',[
+{id:1,username:'admin',password:'admin123',fullname:'System Admin',role:'admin',branch:1,email:'Eletrocnisrst@gmail.com',phone:'+96894301393',is_deleted:false,password_changed:null,reset_code:null,reset_expires:null},
+{id:2,username:'staff',password:'admin123',fullname:'Sales Staff',role:'staff',branch:1,email:'staff@rstelectronics.com',phone:'',is_deleted:false,password_changed:null,reset_code:null,reset_expires:null}
+]);
+let nextId=ls('next_id',{product:4,customer:2,invoice:1,purchase:1,income:1,emp:1,transfer:1,damage:1,warranty:1,install:1,target:1,sms:1,utility:1,recharge:1,branch:2});
+let cart=ls('pos_cart',[]);
+
+function saveAll(){
+  try{
+    save('products',products);save('customers',customers);save('invoices',invoices);save('purchases',purchases);
+    save('income_expense',incomeExpense);save('cash_transfers',cashTransfers);save('bank_transactions',bankTransactions);
+    save('employees',employees);save('attendance',attendance);save('salaries',salaries);save('branches',branches);
+    save('item_transfers',itemTransfers);save('damage_entries',damageEntries);save('warranties',warranties);
+    save('installments',installments);save('targets',targets);save('sms_logs',smsLogs);save('utility_bills',utilityBills);
+    save('recharges',recharges);save('categories',categories);save('brands',brands);save('audit_logs',auditLogs);
+    save('users',users);save('next_id',nextId);
+  }catch(e){console.warn('saveAll failed',e);}
+}
+function logAudit(a,t,id){
+  auditLogs.unshift({user:currentUser?.username||'system',action:a,targetType:t,targetId:id,time:new Date().toLocaleString(CONFIG.dateFormat)});
+  if(auditLogs.length>500)auditLogs=auditLogs.slice(0,500);
+  saveAll();
+}
+
+// ================= NAVIGATION =================
+const pages={};
+function navigateTo(p){
+  SoundEngine.click();
+  document.querySelectorAll('#sidebar .nav-link').forEach(l=>l.classList.remove('active'));
+  document.querySelector(`#sidebar .nav-link[data-page="${p}"]`)?.classList.add('active');
+  const adminOnly=['users','audit','backup','trash'];
+  if(adminOnly.includes(p)&&currentUser?.role!=='admin'){
+    toast('শুধুমাত্র অ্যাডমিন','error');
+    document.getElementById('pageContent').innerHTML='<div class="alert alert-danger">Admin only</div>';
+    closeSidebar();return;
+  }
+  const fn=pages[p]||pages.dashboard;
+  const content=document.getElementById('pageContent');
+  if(animationEnabled)content.style.opacity='0';
+  content.innerHTML=fn();
+  requestAnimationFrame(()=>{content.style.transition='opacity .3s';content.style.opacity='1';});
+  window.scrollTo(0,0);closeSidebar();
+  if(typeof window['after_'+p]==='function')window['after_'+p]();
+}
+
+// ================= PAGES =================
+pages.dashboard=()=>{
+  const today=new Date().toDateString();
+  const tInv=invoices.filter(i=>new Date(i.date).toDateString()===today);
+  const sales=tInv.reduce((s,i)=>s+i.grand_total,0);
+  const profit=tInv.reduce((s,i)=>s+i.profit,0);
+  const vat=tInv.reduce((s,i)=>s+i.vat,0);
+  const stockVal=products.filter(p=>!p.is_deleted).reduce((s,p)=>s+p.cost*p.stock,0);
+  const bi=getBusiness();
+  return `
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h3 class="mb-0">📊 ${t('dashboard')} — ${esc(bi.business_name)}</h3>
+  <div><span class="badge bg-success p-2">👋 ${esc(currentUser?.fullname||'')}</span></div>
+  </div>
+  <div class="row g-2 g-md-3 mb-3">
+  <div class="col-md-3 col-6"><div class="card card-stats bg-primary text-white p-3"><h6>Sales</h6><h3 class="mb-0">${fmt(sales)} <small>${esc(bi.currency)}</small></h3><i class="fas fa-chart-line stats-icon"></i></div></div>
+  <div class="col-md-3 col-6"><div class="card card-stats bg-success text-white p-3"><h6>Profit</h6><h3 class="mb-0">${fmt(profit)}</h3><i class="fas fa-coins stats-icon"></i></div></div>
+  <div class="col-md-3 col-6"><div class="card card-stats bg-warning text-dark p-3"><h6>VAT</h6><h3 class="mb-0">${fmt(vat)}</h3><i class="fas fa-percent stats-icon"></i></div></div>
+  <div class="col-md-3 col-6"><div class="card card-stats bg-info text-white p-3"><h6>Stock Value</h6><h3 class="mb-0">${fmt(stockVal)}</h3><i class="fas fa-boxes stats-icon"></i></div></div>
+  </div>
+  <div class="row g-2 g-md-3 mb-3">
+  <div class="col-md-3 col-6"><div class="card p-3"><h6>Products</h6><h3>${products.filter(p=>!p.is_deleted).length}</h3></div></div>
+  <div class="col-md-3 col-6"><div class="card p-3"><h6>Customers</h6><h3>${customers.filter(c=>!c.is_deleted).length}</h3></div></div>
+  <div class="col-md-3 col-6"><div class="card p-3"><h6>Invoices</h6><h3>${invoices.length}</h3></div></div>
+  <div class="col-md-3 col-6"><div class="card p-3"><h6>Branches</h6><h3>${branches.length}</h3></div></div>
+  </div>
+  <div class="card shadow-sm"><div class="card-header bg-white"><h5 class="mb-0">Weekly Sales</h5></div><div class="card-body"><canvas id="salesChart" height="90"></canvas></div></div>`;
+};
+window.after_dashboard=()=>{
+  const c=document.getElementById('salesChart');
+  if(c&&!c.dataset.ch){
+    c.dataset.ch='1';
+    new Chart(c,{type:'line',data:{labels:['Sat','Sun','Mon','Tue','Wed','Thu','Fri'],datasets:[{label:'Sales',data:[1200,1450,1680,1890,2100,1950,2400],borderColor:'#1e7e34',backgroundColor:'rgba(30,126,52,.1)',tension:.4,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+  }
+};
+
+// POS
+pages.pos=()=>{
+  cart=ls('pos_cart',[]);setTimeout(()=>updateCartDisplay(),30);
+  const ap=products.filter(p=>!p.is_deleted&&p.stock>0);
+  return `
+  <div class="card shadow-sm"><div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <h4 class="mb-0">🛒 ${t('pos')}</h4>
+  <div><button class="btn btn-sm btn-light" onclick="openScanner('pos')"><i class="fas fa-barcode"></i></button>
+  <button class="btn btn-sm btn-danger" onclick="clearCart()"><i class="fas fa-trash"></i></button></div></div>
+  <div class="card-body"><div class="row">
+  <div class="col-lg-7"><div class="search-wrap mb-2"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Search..." onkeyup="filterPOS(this.value)"></div>
+  <div class="row g-2 mb-3" style="max-height:380px;overflow-y:auto">
+  ${ap.map(p=>`<div class="col-md-4 col-6 pos-item"><button class="btn btn-outline-success w-100 h-100 p-2 text-start" onclick="addToCart(${p.id})"><strong class="d-block text-truncate">${esc(p.name)}</strong><small class="text-muted">${esc(p.brand||'')}</small><br><span class="fw-bold text-success">${fmt(p.price)}</span><br><span class="badge bg-${p.stock>CONFIG.lowStockAlert?'success':'warning'}">${p.stock}</span></button></div>`).join('')}
+  </div>
+  <div class="table-responsive"><table class="table table-sm table-bordered mb-0"><thead class="table-light"><tr><th>Product</th><th>Price</th><th style="width:80px">Qty</th><th>Total</th><th></th></tr></thead><tbody id="cartItems"></tbody></table></div>
+  </div>
+  <div class="col-lg-5 mt-3 mt-lg-0"><div class="card bg-light border-0"><div class="card-body">
+  <h5>Invoice</h5><hr>
+  <label class="small">Customer:</label>
+  <select id="posCustomer" class="form-select form-select-sm mb-2"><option value="">Walk-in</option>${customers.filter(c=>!c.is_deleted).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
+  <label class="small">Payment:</label>
+  <select id="posPayment" class="form-select form-select-sm mb-2"><option>Cash</option><option>Card</option><option>Bank</option><option>Due</option></select>
+  <label class="small">Discount:</label>
+  <input type="number" id="posDiscount" class="form-control form-control-sm mb-2" value="0" onchange="updateCartDisplay()">
+  <hr>
+  <p class="d-flex justify-content-between mb-1"><span>Subtotal:</span><strong id="subTotal">0.000</strong></p>
+  <p class="d-flex justify-content-between mb-1"><span>VAT:</span><strong id="vatTotal">0.000</strong></p>
+  <hr>
+  <h4 class="d-flex justify-content-between text-success mb-3"><span>Total:</span><span id="grandTotal">0.000</span></h4>
+  <button class="btn btn-success w-100 btn-lg mb-2" onclick="checkout()"><i class="fas fa-print"></i> Checkout</button>
+  </div></div></div>
+  </div></div></div>`;
+};
+function updateCartDisplay(){
+  cart=ls('pos_cart',[]);
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const disc=parseFloat(document.getElementById('posDiscount')?.value)||0;
+  const taxable=Math.max(0,sub-disc);
+  const vat=CONFIG.vatEnabled?taxable*CONFIG.vatRate:0;
+  const grand=taxable+vat;
+  const S=document.getElementById('subTotal'),V=document.getElementById('vatTotal'),G=document.getElementById('grandTotal');
+  if(S)S.textContent=fmt(sub);if(V)V.textContent=fmt(vat);if(G)G.textContent=fmt(grand);
+  const tb=document.getElementById('cartItems');
+  if(tb)tb.innerHTML=cart.length===0?'<tr><td colspan="5" class="text-center text-muted py-3">Empty</td></tr>':
+  cart.map((it,i)=>`<tr><td>${esc(it.name)}</td><td>${fmt(it.price)}</td><td><input type="number" class="form-control form-control-sm" style="width:70px" value="${it.qty}" min="1" onchange="setQty(${i},this.value)"></td><td class="fw-bold">${fmt(it.price*it.qty)}</td><td><button class="btn btn-sm btn-danger" onclick="removeFromCart(${i})">×</button></td></tr>`).join('');
+}
+window.addToCart=id=>{const p=products.find(x=>x.id===id);if(!p)return;const e=cart.find(x=>x.id===id);if(e){if(e.qty<p.stock)e.qty++;else{SoundEngine.error();return toast('No stock','error');}}else cart.push({id:p.id,name:p.name,price:p.price,cost:p.cost,qty:1});SoundEngine.beep();save('pos_cart',cart);updateCartDisplay();};
+window.setQty=(i,v)=>{cart[i].qty=Math.max(1,parseInt(v)||1);save('pos_cart',cart);updateCartDisplay();};
+window.removeFromCart=i=>{SoundEngine.click();cart.splice(i,1);save('pos_cart',cart);updateCartDisplay();};
+window.clearCart=()=>{if(!cart.length||confirm('Clear?')){cart=[];save('pos_cart',cart);updateCartDisplay();}};
+window.filterPOS=v=>{const s=v.toLowerCase();document.querySelectorAll('.pos-item').forEach(el=>el.style.display=el.innerText.toLowerCase().includes(s)?'':'none');};
+
+window.checkout=()=>{
+  if(!cart.length)return toast('Cart empty','error');
+  showSpinner();
+  setTimeout(()=>{
+    const custId=document.getElementById('posCustomer').value;
+    const cname=custId?customers.find(c=>c.id==custId)?.name:'Walk-in';
+    const custObj=custId?customers.find(c=>c.id==custId):null;
+    const pay=document.getElementById('posPayment').value;
+    const disc=parseFloat(document.getElementById('posDiscount').value)||0;
+    const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+    const taxable=Math.max(0,sub-disc);
+    const vat=CONFIG.vatEnabled?taxable*CONFIG.vatRate:0;
+    const grand=taxable+vat;
+    const profit=cart.reduce((s,i)=>s+((i.price-i.cost)*i.qty),0)-disc;
+    const inv={
+      id:nextId.invoice++,
+      invoice_no:CONFIG.invoice_prefix+'-'+String(nextId.invoice-1).padStart(5,'0'),
+      date:new Date().toLocaleString(CONFIG.dateFormat),
+      customer:cname,customer_phone:custObj?.phone||'',customer_email:custObj?.email||'',
+      items:[...cart],subtotal:sub,discount:disc,vat,grand_total:grand,
+      payment:pay,profit,status:pay==='Due'?'Due':'Paid',
+      branch:currentUser?.branch||1,
+      branch_name:branches.find(b=>b.id===(currentUser?.branch||1))?.name||'Main',
+      operator:currentUser?.username||'system',
+      operator_name:currentUser?.fullname||''
+    };
+    invoices.unshift(inv);
+    cart.forEach(it=>{const p=products.find(x=>x.id===it.id);if(p)p.stock-=it.qty;});
+    cart.forEach(it=>{const p=products.find(x=>x.id===it.id);if(p&&p.warranty){warranties.push({id:nextId.warranty++,invoice:inv.invoice_no,customer:cname,product:p.name,imei:p.imei||'',start:new Date().toISOString().slice(0,10),status:'Active'});}});
+    saveAll();
+    logAudit(`Sale ${inv.invoice_no} - ${fmt(grand)} ${CONFIG.currency}`,'invoice',inv.id);
+    performAutoBackup('after-sale');
+    printInvoice(inv);
+
+    const notifTitle=`🛒 New Sale ${inv.invoice_no}`;
+    const notifBody=`${inv.operator_name} sold ${cart.length} item(s) to ${cname} for ${fmt(grand)} ${CONFIG.currency} at ${inv.branch_name} branch`;
+    pushNotification(notifTitle,notifBody,'sale',true);
+
+    if(CONFIG.notif_on_lowstock){
+      cart.forEach(it=>{
+        const p=products.find(x=>x.id===it.id);
+        if(p&&p.stock<=CONFIG.lowStockAlert){
+          pushNotification(`⚠️ Low Stock: ${p.name}`,`Only ${p.stock} left in stock`,'stock',true);
+        }
+      });
+    }
+
+    cart=[];save('pos_cart',cart);updateCartDisplay();
+    hideSpinner();SoundEngine.success();toast('✅ Sale completed!','success');
+  },400);
+};
+
+window.printInvoice=inv=>{
+  const bi=getBusiness();
+  const rows=inv.items.map(i=>`<tr><td style="padding:6px;border-bottom:1px solid #ddd">${esc(i.name)}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #ddd">${fmt(i.price)}</td><td style="padding:6px;text-align:center;border-bottom:1px solid #ddd">${i.qty}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #ddd">${fmt(i.price*i.qty)}</td></tr>`).join('');
+  const h=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${inv.invoice_no}</title><style>body{font-family:'Hind Siliguri',Arial,sans-serif;padding:15px;max-width:800px;margin:0 auto;font-size:13px}.h{text-align:center;border-bottom:3px solid #1e7e34;padding-bottom:10px;margin-bottom:15px}.h h1{margin:0;color:#1e7e34;font-size:26px}.h h1 span{color:#fbbf24}.h p{margin:2px 0;font-size:12px;color:#666}.t{background:#1e7e34;color:#fff;text-align:center;padding:8px;margin:15px 0;font-size:16px;font-weight:bold;letter-spacing:2px}.ig{display:flex;justify-content:space-between;margin-bottom:15px;font-size:12px}.ig div{flex:1}.ig strong{display:block;color:#1e7e34;font-size:11px;text-transform:uppercase}table{width:100%;border-collapse:collapse;margin-bottom:15px}thead{background:#1e7e34;color:#fff}thead th{padding:8px;text-align:left;font-size:12px}thead th:last-child{text-align:right}.s{width:50%;margin-left:auto;font-size:13px}.s tr td{padding:4px 0}.s tr td:last-child{text-align:right}.s .tot{font-size:16px;font-weight:bold;color:#1e7e34;border-top:2px solid #1e7e34;padding-top:8px}.f{text-align:center;margin-top:30px;padding-top:15px;border-top:2px dashed #ccc;color:#666;font-size:12px}.f .tn{font-size:14px;color:#1e7e34;font-weight:bold}.info{background:#f8f9fa;padding:8px;border-radius:5px;font-size:11px;margin-top:10px}</style></head><body><div class="h"><h1>${esc(bi.business_name).replace(/^(\S+)/,'<span>$1</span>')}</h1><p>${esc(bi.legal_name)}</p><p>CR: ${esc(bi.cr_no)} | ${esc(bi.address)} | 📞 ${esc(bi.phone)}</p></div><div class="t">TAX INVOICE</div><div class="ig"><div><strong>Invoice</strong>${esc(inv.invoice_no)}</div><div><strong>Date</strong>${esc(inv.date)}</div><div><strong>Customer</strong>${esc(inv.customer)}</div></div><table><thead><tr><th>Item</th><th style="text-align:right">Price</th><th style="text-align:center">Qty</th><th style="text-align:right">Total</th></tr></thead><tbody>${rows}</tbody></table><table class="s"><tr><td>Subtotal:</td><td>${fmt(inv.subtotal)} ${esc(bi.currency)}</td></tr>${inv.discount>0?`<tr><td>Discount:</td><td>-${fmt(inv.discount)} ${esc(bi.currency)}</td></tr>`:''}${CONFIG.vatEnabled?`<tr><td>VAT (${(CONFIG.vatRate*100).toFixed(0)}%):</td><td>${fmt(inv.vat)} ${esc(bi.currency)}</td></tr>`:''}<tr class="tot"><td>GRAND TOTAL:</td><td>${fmt(inv.grand_total)} ${esc(bi.currency)}</td></tr></table><p><strong>Payment:</strong> ${esc(inv.payment)}</p><div class="info"><strong>Branch:</strong> ${esc(inv.branch_name)}<br><strong>Operator:</strong> ${esc(inv.operator_name)} (${esc(inv.operator)})</div><div class="f"><div class="tn">🙏 Thank You!</div><p>${esc(bi.business_name)}</p></div></body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();setTimeout(()=>w.print(),400);
+};
+
+// PRODUCTS
+pages.products=()=>{
+  const a=products.filter(p=>!p.is_deleted);
+  return `
+  <div class="card shadow-sm"><div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <h4 class="mb-0">📦 ${t('products')}</h4>
+  <div class="d-flex gap-2"><button class="btn btn-sm btn-outline-success" onclick="openScanner('product_search')"><i class="fas fa-barcode"></i></button><button class="btn btn-sm btn-success" onclick="showProductModal()"><i class="fas fa-plus"></i> New</button></div></div>
+  <div class="card-body"><div class="search-wrap mb-2"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Search..." onkeyup="filterProd(this.value)"></div>
+  <div class="table-responsive"><table class="table table-hover mb-0" id="prodTbl"><thead class="table-light"><tr><th>ID</th><th>Name</th><th>Barcode</th><th>Stock</th><th></th></tr></thead><tbody>
+  ${a.map(p=>`<tr><td>${p.id}</td><td><strong>${esc(p.name)}</strong><br><small class="text-muted">${esc(p.brand||'')}</small></td><td><code style="font-size:11px">${esc(p.barcode||'-')}</code><br><small><code style="font-size:10px">${esc(p.imei||'')}</code></small></td><td><span class="badge bg-${p.stock>CONFIG.lowStockAlert?'success':p.stock>0?'warning':'danger'}">${p.stock}</span></td><td class="text-nowrap"><button class="btn btn-sm btn-warning" onclick="editProd(${p.id})"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-danger" onclick="delProd(${p.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('')}
+  </tbody></table></div></div></div>
+  <div class="modal fade" id="prodModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+  <div class="modal-header"><h5 id="prodModalTitle">New Product</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><input type="hidden" id="editProdId"><div class="row g-2">
+  <div class="col-md-6"><label class="small">Name *</label><input type="text" id="f_name" class="form-control form-control-sm"></div>
+  <div class="col-md-6"><label class="small">Brand</label><input type="text" id="f_brand" class="form-control form-control-sm"></div>
+  <div class="col-md-4"><label class="small">Category</label><input type="text" id="f_category" class="form-control form-control-sm"></div>
+  <div class="col-md-4"><label class="small">Cost *</label><input type="number" step="0.001" id="f_cost" class="form-control form-control-sm"></div>
+  <div class="col-md-4"><label class="small">Price *</label><input type="number" step="0.001" id="f_price" class="form-control form-control-sm"></div>
+  <div class="col-md-4"><label class="small">Stock *</label><input type="number" id="f_stock" class="form-control form-control-sm" value="0"></div>
+  <div class="col-md-4"><label class="small">Warranty</label><input type="text" id="f_warranty" class="form-control form-control-sm" placeholder="1 Year"></div>
+  <div class="col-md-4"><label class="small">Unit</label><input type="text" id="f_unit" class="form-control form-control-sm" value="pcs"></div>
+  <div class="col-12 mt-3 mb-2"><hr><h6 class="text-success">🔢 Auto-Generate Codes</h6></div>
+  <div class="col-md-12"><label class="small"><i class="fas fa-barcode"></i> Barcode (EAN-13)</label>
+    <div class="input-group input-group-sm"><input type="text" id="f_barcode" class="form-control" placeholder="Auto-generated"><button class="btn btn-outline-success" type="button" onclick="autoGenBarcode()"><i class="fas fa-sync"></i></button><button class="btn btn-success" type="button" onclick="openScanner('barcode_field')"><i class="fas fa-camera"></i></button></div></div>
+  <div class="col-md-6"><label class="small"><i class="fas fa-mobile-alt"></i> IMEI (15-digit)</label>
+    <div class="input-group input-group-sm"><input type="text" id="f_imei" class="form-control" placeholder="Auto-generated"><button class="btn btn-outline-success" type="button" onclick="autoGenIMEI()"><i class="fas fa-sync"></i></button></div></div>
+  <div class="col-md-6"><label class="small"><i class="fas fa-hashtag"></i> Serial</label>
+    <div class="input-group input-group-sm"><input type="text" id="f_serial" class="form-control" placeholder="Auto-generated"><button class="btn btn-outline-success" type="button" onclick="autoGenSerial()"><i class="fas fa-sync"></i></button></div></div>
+  </div></div>
+  <div class="modal-footer"><button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">${t('cancel')}</button><button class="btn btn-success btn-sm" onclick="saveProd()">${t('save')}</button></div>
+  </div></div></div>`;
+};
+window.autoGenBarcode=()=>{const v=generateEAN13();document.getElementById('f_barcode').value=v;SoundEngine.beep();toast('Barcode: '+v,'info',1500);};
+window.autoGenIMEI=()=>{const v=generateIMEI();document.getElementById('f_imei').value=v;SoundEngine.beep();toast('IMEI: '+v,'info',1500);};
+window.autoGenSerial=()=>{const v=generateSerial('RST');document.getElementById('f_serial').value=v;SoundEngine.beep();toast('Serial: '+v,'info',1500);};
+window.filterProd=v=>{const s=v.toLowerCase();document.querySelectorAll('#prodTbl tbody tr').forEach(tr=>tr.style.display=tr.innerText.toLowerCase().includes(s)?'':'none');};
+window.showProductModal=()=>{
+  document.getElementById('editProdId').value='';
+  document.getElementById('prodModalTitle').innerText='New Product';
+  ['f_name','f_brand','f_category','f_barcode','f_imei','f_serial','f_cost','f_price','f_warranty'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f_stock').value='0';
+  document.getElementById('f_unit').value='pcs';
+  if(CONFIG.auto_barcode)document.getElementById('f_barcode').value=generateEAN13();
+  if(CONFIG.auto_imei)document.getElementById('f_imei').value=generateIMEI();
+  if(CONFIG.auto_serial)document.getElementById('f_serial').value=generateSerial('RST');
+  new bootstrap.Modal(document.getElementById('prodModal')).show();
+};
+window.editProd=id=>{
+  const p=products.find(x=>x.id===id);if(!p)return;
+  document.getElementById('editProdId').value=id;
+  document.getElementById('prodModalTitle').innerText='Edit';
+  document.getElementById('f_name').value=p.name;
+  document.getElementById('f_brand').value=p.brand||'';
+  document.getElementById('f_category').value=p.category||'';
+  document.getElementById('f_barcode').value=p.barcode||'';
+  document.getElementById('f_imei').value=p.imei||'';
+  document.getElementById('f_serial').value=p.serial||'';
+  document.getElementById('f_cost').value=p.cost;
+  document.getElementById('f_price').value=p.price;
+  document.getElementById('f_stock').value=p.stock;
+  document.getElementById('f_warranty').value=p.warranty||'';
+  document.getElementById('f_unit').value=p.unit||'pcs';
+  new bootstrap.Modal(document.getElementById('prodModal')).show();
+};
+window.saveProd=()=>{
+  const name=document.getElementById('f_name').value.trim();
+  const cost=parseFloat(document.getElementById('f_cost').value);
+  const price=parseFloat(document.getElementById('f_price').value);
+  if(!name||isNaN(cost)||isNaN(price)){SoundEngine.error();toast('Fill required','error');return;}
+  const data={name,brand:document.getElementById('f_brand').value,category:document.getElementById('f_category').value,cost,price,stock:parseInt(document.getElementById('f_stock').value)||0,barcode:document.getElementById('f_barcode').value||null,imei:document.getElementById('f_imei').value||null,serial:document.getElementById('f_serial').value||null,warranty:document.getElementById('f_warranty').value,unit:document.getElementById('f_unit').value};
+  const id=document.getElementById('editProdId').value;
+  if(id){Object.assign(products.find(x=>x.id===parseInt(id)),data);logAudit(`Edit ${name}`,'product',parseInt(id));}
+  else{products.push({id:nextId.product++,...data,is_deleted:false});logAudit(`Add ${name}`,'product',nextId.product-1);}
+  saveAll();
+  performAutoBackup('after-save');
+  SoundEngine.success();toast('Saved','success');
+  bootstrap.Modal.getInstance(document.getElementById('prodModal')).hide();navigateTo('products');
+};
+window.delProd=id=>confirmDialog('Delete?',()=>{const p=products.find(x=>x.id===id);if(p){p.is_deleted=true;saveAll();logAudit(`Delete ${p.name}`,'product',id);SoundEngine.warning();toast('Deleted','warning');navigateTo('products');}});
+
+// ================= PASSWORD MANAGEMENT =================
+window.openChangePwd=userId=>{
+  const u=userId?users.find(x=>x.id===userId):currentUser;
+  if(!u)return;
+  document.getElementById('cpUserId').value=u.id;
+  document.getElementById('cpCurrent').value='';
+  document.getElementById('cpNew').value='';
+  document.getElementById('cpConfirm').value='';
+  document.getElementById('cpResult').innerHTML='';
+  document.getElementById('cpStrength').style.width='0%';
+  new bootstrap.Modal(document.getElementById('changePwdModal')).show();
+};
+window.doChangePassword=()=>{
+  const uid=parseInt(document.getElementById('cpUserId').value);
+  const curr=document.getElementById('cpCurrent').value;
+  const nw=document.getElementById('cpNew').value;
+  const cf=document.getElementById('cpConfirm').value;
+  const res=document.getElementById('cpResult');
+  const u=users.find(x=>x.id===uid);
+  if(!u)return res.innerHTML='<div class="alert alert-danger">User not found</div>';
+  const isAdminReset=currentUser?.role==='admin'&&currentUser.id!==u.id;
+  if(!isAdminReset&&u.password!==curr)return res.innerHTML='<div class="alert alert-danger">Current password is incorrect</div>';
+  if(nw.length<6)return res.innerHTML='<div class="alert alert-danger">Password must be at least 6 characters</div>';
+  if(nw!==cf)return res.innerHTML='<div class="alert alert-danger">Passwords do not match</div>';
+  if(nw===u.password)return res.innerHTML='<div class="alert alert-warning">New password same as current</div>';
+  u.password=nw;
+  u.password_changed=new Date().toISOString();
+  u.reset_code=null;u.reset_expires=null;
+  saveAll();
+  logAudit(isAdminReset?`Admin changed password for ${u.username}`:`Password changed for ${u.username}`,'user',u.id);
+  performAutoBackup('password-change');
+  SoundEngine.success();
+  res.innerHTML='<div class="alert alert-success"><i class="fas fa-check-circle"></i> Password updated successfully!</div>';
+  toast('✅ Password updated','success');
+  setTimeout(()=>{bootstrap.Modal.getInstance(document.getElementById('changePwdModal'))?.hide();if(currentUser.id===uid&&currentUser.role!=='admin'){}},1800);
+};
+
+// FORGOT PASSWORD
+window.openForgotPassword=()=>{
+  document.getElementById('forgotStep1').classList.remove('d-none');
+  document.getElementById('forgotStep2').classList.add('d-none');
+  document.getElementById('forgotResult').innerHTML='';
+  document.getElementById('forgotEmail').value='';
+  new bootstrap.Modal(document.getElementById('forgotPwdModal')).show();
+};
+window.backToForgotStep1=()=>{
+  document.getElementById('forgotStep1').classList.remove('d-none');
+  document.getElementById('forgotStep2').classList.add('d-none');
+  document.getElementById('forgotResult').innerHTML='';
+};
+window.doRequestReset=async()=>{
+  const email=document.getElementById('forgotEmail').value.trim().toLowerCase();
+  const res=document.getElementById('forgotResult');
+  if(!email)return res.innerHTML='<div class="alert alert-danger">Please enter email</div>';
+  const u=users.find(x=>x.email&&x.email.toLowerCase()===email&&!x.is_deleted);
+  if(!u){
+    return res.innerHTML='<div class="alert alert-danger">No account found with this email</div>';
+  }
+  const code=String(Math.floor(100000+Math.random()*900000));
+  u.reset_code=code;
+  u.reset_expires=Date.now()+15*60*1000;
+  saveAll();
+  logAudit(`Password reset requested for ${u.username}`,'user',u.id);
+  let emailSent=false;
+  if(CONFIG.emailjs_service&&CONFIG.emailjs_public&&CONFIG.emailjs_template){
+    try{
+      await emailjs.send(CONFIG.emailjs_service,CONFIG.emailjs_template,{
+        to_email:u.email,to_name:u.fullname,
+        subject:`Password Reset Code - ${CONFIG.business_name}`,
+        message:`Your password reset code is: ${code}\n\nThis code expires in 15 minutes.`,
+        business:CONFIG.business_name,time:new Date().toLocaleString()
+      },CONFIG.emailjs_public);
+      emailSent=true;
+    }catch(e){console.warn('Email send failed:',e);}
+  }
+  document.getElementById('forgotStep1').classList.add('d-none');
+  document.getElementById('forgotStep2').classList.remove('d-none');
+  document.getElementById('forgotCode').value='';
+  document.getElementById('forgotNewPwd').value='';
+  document.getElementById('forgotNewPwd2').value='';
+  res.innerHTML=emailSent
+    ?`<div class="alert alert-success"><i class="fas fa-check-circle"></i> Reset code sent to <strong>${esc(email)}</strong>. Check your inbox.</div>`
+    :`<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Email service not configured. Your reset code is: <strong style="font-size:18px;letter-spacing:2px">${code}</strong><br><small>Save this code — it expires in 15 minutes.</small></div>`;
+  SoundEngine.success();
+};
+window.doCompleteReset=()=>{
+  const email=document.getElementById('forgotEmail').value.trim().toLowerCase();
+  const code=document.getElementById('forgotCode').value.trim();
+  const nw=document.getElementById('forgotNewPwd').value;
+  const cf=document.getElementById('forgotNewPwd2').value;
+  const res=document.getElementById('forgotResult');
+  if(!code||!nw)return res.innerHTML='<div class="alert alert-danger">Fill all fields</div>';
+  if(nw.length<6)return res.innerHTML='<div class="alert alert-danger">Password must be at least 6 characters</div>';
+  if(nw!==cf)return res.innerHTML='<div class="alert alert-danger">Passwords do not match</div>';
+  const u=users.find(x=>x.email&&x.email.toLowerCase()===email&&!x.is_deleted);
+  if(!u)return res.innerHTML='<div class="alert alert-danger">User not found</div>';
+  if(u.reset_code!==code)return res.innerHTML='<div class="alert alert-danger">Invalid code</div>';
+  if(Date.now()>(u.reset_expires||0))return res.innerHTML='<div class="alert alert-danger">Code expired. Please request a new one.</div>';
+  u.password=nw;
+  u.password_changed=new Date().toISOString();
+  u.reset_code=null;u.reset_expires=null;
+  saveAll();
+  logAudit(`Password reset completed for ${u.username}`,'user',u.id);
+  performAutoBackup('password-reset');
+  SoundEngine.success();
+  res.innerHTML='<div class="alert alert-success"><i class="fas fa-check-circle"></i> Password reset successful! You can now log in.</div>';
+  toast('✅ Password reset!','success');
+  setTimeout(()=>{
+    bootstrap.Modal.getInstance(document.getElementById('forgotPwdModal'))?.hide();
+    document.getElementById('loginUsername').value=u.username;
+    document.getElementById('loginPassword').value='';
+    document.getElementById('loginPassword').focus();
+  },1800);
+};
+
+// ================= PROFILE PAGE =================
+pages.profile=()=>{
+  const u=currentUser;
+  if(!u)return '';
+  const changed=u.password_changed?new Date(u.password_changed).toLocaleString():'Never';
+  return `
+  <div class="card shadow-sm"><div class="card-header"><h4 class="mb-0"><i class="fas fa-user-circle"></i> My Profile</h4></div>
+  <div class="card-body">
+  <div class="row g-3">
+  <div class="col-md-6"><label class="small text-muted">Username</label><input type="text" class="form-control" value="${esc(u.username)}" readonly></div>
+  <div class="col-md-6"><label class="small text-muted">Full Name</label><input type="text" class="form-control" value="${esc(u.fullname)}" readonly></div>
+  <div class="col-md-6"><label class="small text-muted">Email</label><input type="email" class="form-control" value="${esc(u.email||'')}" readonly></div>
+  <div class="col-md-6"><label class="small text-muted">Phone</label><input type="text" class="form-control" value="${esc(u.phone||'')}" readonly></div>
+  <div class="col-md-6"><label class="small text-muted">Role</label><input type="text" class="form-control" value="${esc(u.role)}" readonly></div>
+  <div class="col-md-6"><label class="small text-muted">Last password change</label><input type="text" class="form-control" value="${esc(changed)}" readonly></div>
+  </div>
+  <hr>
+  <h5>🔒 Security</h5>
+  <button class="btn btn-success" onclick="openChangePwd(${u.id})"><i class="fas fa-key"></i> Change My Password</button>
+  <div class="alert alert-info small mt-3"><i class="fas fa-info-circle"></i> Passwords must be at least 6 characters. Use a mix of letters, numbers, and symbols for better security.</div>
+  </div></div>`;
+};
+
+// ================= NOTIFICATIONS PAGE =================
+pages.notifications=()=>`
+<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🔔 Notifications</h4></div>
+<div class="card-body">
+<div class="row g-2 mb-3">
+<div class="col-6 col-md-3"><div class="card p-3 text-center"><h6>Total</h6><h3>${notifications.length}</h3></div></div>
+<div class="col-6 col-md-3"><div class="card p-3 text-center"><h6>Unread</h6><h3 class="text-danger">${notifications.filter(n=>!n.read).length}</h3></div></div>
+<div class="col-6 col-md-3"><div class="card p-3 text-center"><h6>Browser</h6><h3>${'Notification' in window?Notification.permission:'N/A'}</h3></div></div>
+<div class="col-6 col-md-3"><div class="card p-3 text-center"><h6>Sound</h6><h3>${soundEnabled?'ON':'OFF'}</h3></div></div>
+</div>
+<div class="d-flex gap-2 mb-3 flex-wrap">
+<button class="btn btn-success btn-sm" onclick="requestNotifPermission()"><i class="fas fa-bell"></i> Enable Browser</button>
+<button class="btn btn-primary btn-sm" onclick="testNotification()"><i class="fas fa-vial"></i> Test</button>
+<button class="btn btn-danger btn-sm" onclick="if(confirm('Clear all?')){notifications=[];localStorage.setItem('notifications','[]');updateNotifBadge();navigateTo('notifications');}">Clear All</button>
+</div>
+<h5>Recent</h5>
+<div style="max-height:500px;overflow-y:auto">
+${notifications.slice(0,100).map(n=>`
+<div class="card mb-2 p-3" style="border-left:4px solid ${n.type==='sale'?'#1e7e34':n.type==='stock'?'#ffc107':'#17a2b8'}">
+<div class="d-flex justify-content-between">
+<strong>${esc(n.title)}</strong>
+<small class="text-muted">${esc(n.time)}</small>
+</div>
+<div style="font-size:13px;color:#666;margin-top:4px">${esc(n.body)}</div>
+</div>`).join('')||'<div class="alert alert-info">No notifications yet</div>'}
+</div>
+</div></div>`;
+window.testNotification=()=>{pushNotification('🧪 Test Notification','This is a test notification from RST ERP at '+new Date().toLocaleTimeString(),'info',true);toast('Test sent!','success');};
+
+// ================= BACKUP PAGE (ENHANCED) =================
+pages.backup=()=>{
+  if(currentUser?.role!=='admin')return '<div class="alert alert-danger">Admin only</div>';
+  const autoBackups=ls(AUTO_BACKUP_KEY,[]);
+  const autoHtml=autoBackups.length===0
+    ?'<div class="alert alert-info"><i class="fas fa-info-circle"></i> No auto-backups yet. They will be created automatically every '+(CONFIG.auto_backup_interval||5)+' minutes, and after each sale/save.</div>'
+    :autoBackups.map(b=>{
+      const dt=new Date(b.timestamp);
+      const ago=Math.round((Date.now()-dt.getTime())/60000);
+      const kb=(b.size/1024).toFixed(1);
+      return `<div class="backup-item">
+        <div class="info">
+          <strong><i class="fas fa-${b.reason==='manual'?'hand-pointer':'clock'}"></i> ${dt.toLocaleString()}</strong>
+          <small>Reason: ${esc(b.reason)} · Size: ${kb} KB · ${ago<1?'just now':ago+'m ago'}</small>
+        </div>
+        <div class="d-flex gap-1">
+          <button class="btn btn-sm btn-success" onclick="restoreFromBackup(${b.id})"><i class="fas fa-undo"></i> Restore</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="if(confirm('Delete this backup?')){deleteBackup(${b.id});navigateTo('backup')}"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>`;
+    }).join('');
+  return `
+  <div class="card shadow-sm mb-3"><div class="card-header"><h4 class="mb-0"><i class="fas fa-database"></i> Backup & Restore</h4></div>
+  <div class="card-body">
+  <div class="alert alert-success d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <span><i class="fas fa-shield-alt"></i> <strong>Auto Backup:</strong> ${CONFIG.auto_backup_enabled?'<span class="text-success">ON</span>':'<span class="text-danger">OFF</span>'} · Every ${CONFIG.auto_backup_interval||5} min · Max ${CONFIG.auto_backup_max||10} snapshots</span>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-success" onclick="performAutoBackup('manual');toast('Backup created!','success');navigateTo('backup')"><i class="fas fa-plus"></i> Backup Now</button>
+      <button class="btn btn-sm btn-outline-success" onclick="toggleAutoBackup()">${CONFIG.auto_backup_enabled?'Disable':'Enable'} Auto</button>
+    </div>
+  </div>
+  <h5>📥 Download / Restore</h5>
+  <div class="row g-2 mb-3">
+    <div class="col-md-6"><button class="btn btn-success w-100" onclick="downloadBackup()"><i class="fas fa-download"></i> Download JSON Backup</button></div>
+    <div class="col-md-6"><button class="btn btn-primary w-100" onclick="downloadSQL()"><i class="fas fa-file-code"></i> Download SQL (MySQL)</button></div>
+  </div>
+  <div class="input-group mb-3">
+    <input type="file" id="bkFile" class="form-control" accept=".json">
+    <button class="btn btn-danger" onclick="restoreBackup()"><i class="fas fa-upload"></i> Restore from File</button>
+  </div>
+  </div></div>
+
+  <div class="card shadow-sm"><div class="card-header"><h5 class="mb-0"><i class="fas fa-history"></i> Auto-Backup History (${autoBackups.length})</h5></div>
+  <div class="card-body"><div style="max-height:500px;overflow-y:auto">${autoHtml}</div></div></div>`;
+};
+window.toggleAutoBackup=()=>{CONFIG.auto_backup_enabled=!CONFIG.auto_backup_enabled;saveConfig();startAutoBackup();toast(CONFIG.auto_backup_enabled?'Auto-backup ON':'Auto-backup OFF','info');navigateTo('backup');};
+
+window.downloadBackup=()=>{
+  const all=getAllDataSnapshot();
+  const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`RST_backup_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+  a.click();
+  SoundEngine.success();toast('Downloaded','success');
+};
+
+window.downloadSQL=()=>{
+  let sql=`-- RST ELECTRONICS ERP Database Export\n-- Generated: ${new Date().toLocaleString()}\n\nCREATE DATABASE IF NOT EXISTS rst_electronics_erp;\nUSE rst_electronics_erp;\n\n`;
+  sql+=`CREATE TABLE IF NOT EXISTS products (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), brand VARCHAR(100), category VARCHAR(100), cost DECIMAL(12,3), price DECIMAL(12,3), stock INT, barcode VARCHAR(50), imei VARCHAR(20), serial_no VARCHAR(100), warranty VARCHAR(50), is_deleted TINYINT DEFAULT 0);\n\n`;
+  sql+=`CREATE TABLE IF NOT EXISTS customers (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(200), phone VARCHAR(50), email VARCHAR(150), balance DECIMAL(12,3) DEFAULT 0, is_deleted TINYINT DEFAULT 0);\n\n`;
+  sql+=`CREATE TABLE IF NOT EXISTS invoices (id INT PRIMARY KEY AUTO_INCREMENT, invoice_no VARCHAR(50), date VARCHAR(50), customer VARCHAR(200), subtotal DECIMAL(12,3), discount DECIMAL(12,3), vat DECIMAL(12,3), grand_total DECIMAL(12,3), payment VARCHAR(50), profit DECIMAL(12,3), branch VARCHAR(100), operator VARCHAR(100));\n\n`;
+  sql+=`CREATE TABLE IF NOT EXISTS users (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(100), password VARCHAR(255), fullname VARCHAR(200), role VARCHAR(20), email VARCHAR(150), phone VARCHAR(50), is_deleted TINYINT DEFAULT 0);\n\n`;
+  products.forEach(p=>{sql+=`INSERT INTO products (name,brand,category,cost,price,stock,barcode,imei,serial_no,warranty) VALUES ('${p.name.replace(/'/g,"''")}','${(p.brand||'').replace(/'/g,"''")}','${(p.category||'').replace(/'/g,"''")}',${p.cost},${p.price},${p.stock},'${p.barcode||''}','${p.imei||''}','${p.serial||''}','${(p.warranty||'').replace(/'/g,"''")}');\n`;});
+  users.forEach(u=>{sql+=`INSERT INTO users (username,password,fullname,role,email,phone) VALUES ('${u.username.replace(/'/g,"''")}','${u.password.replace(/'/g,"''")}','${(u.fullname||'').replace(/'/g,"''")}','${u.role}','${(u.email||'').replace(/'/g,"''")}','${(u.phone||'').replace(/'/g,"''")}');\n`;});
+  sql+=`\n-- ${products.length} products, ${customers.length} customers, ${invoices.length} invoices, ${users.length} users\n`;
+  const blob=new Blob([sql],{type:'application/sql'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=`rst_electronics_${new Date().toISOString().slice(0,10)}.sql`;a.click();
+  SoundEngine.success();toast('SQL file downloaded','success');
+};
+
+window.restoreBackup=()=>{
+  const f=document.getElementById('bkFile').files[0];if(!f)return;
+  if(!confirm('Replace all data with this file?'))return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      Object.keys(d).forEach(k=>{
+        if(k==='gemini_api_key'||k==='config'||k==='nextId')return;
+        if(Array.isArray(d[k]))save(k,d[k]);
+      });
+      if(d.gemini_api_key)localStorage.setItem('gemini_api_key',d.gemini_api_key);
+      if(d.config){CONFIG=Object.assign({},defaultConfig,d.config);saveConfig();}
+      if(d.nextId){nextId=d.nextId;save('next_id',nextId);}
+      SoundEngine.success();toast('Restored! Reloading...','success');
+      setTimeout(()=>location.reload(),1000);
+    }catch(err){SoundEngine.error();toast('Error: '+err.message,'error');}
+  };
+  r.readAsText(f);
+};
+
+// ================= SETTINGS (with admin emails) =================
+pages.settings=()=>{
+  if(currentUser?.role!=='admin')return '<div class="alert alert-danger">Admin only</div>';
+  return `
+  <div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">⚙️ Settings</h4></div>
+  <div class="card-body">
+  <ul class="nav nav-pills tab-pills mb-3">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#set-biz">Business</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#set-admin">👤 Admin Emails</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#set-notif">🔔 Notifications</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#set-backup">💾 Backup</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#set-look">Appearance</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#set-ai">AI</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#set-gen">Auto-Gen</a></li>
+  </ul>
+  <div class="tab-content">
+
+  <div class="tab-pane fade show active" id="set-biz">
+  <h5>Business Info</h5>
+  <div class="row g-3">
+  <div class="col-md-6"><label class="small">Business Name</label><input type="text" id="cfg_biz" class="form-control" value="${esc(CONFIG.business_name)}"></div>
+  <div class="col-md-6"><label class="small">Legal Name</label><input type="text" id="cfg_legal" class="form-control" value="${esc(CONFIG.legal_name)}"></div>
+  <div class="col-md-4"><label class="small">CR No</label><input type="text" id="cfg_cr" class="form-control" value="${esc(CONFIG.cr_no)}"></div>
+  <div class="col-md-4"><label class="small">Phone</label><input type="text" id="cfg_phone" class="form-control" value="${esc(CONFIG.phone)}"></div>
+  <div class="col-md-4"><label class="small">Email</label><input type="email" id="cfg_email" class="form-control" value="${esc(CONFIG.email)}"></div>
+  <div class="col-12"><label class="small">Address</label><input type="text" id="cfg_addr" class="form-control" value="${esc(CONFIG.address)}"></div>
+  <div class="col-md-3"><label class="small">Currency</label><input type="text" id="cfg_curr" class="form-control" value="${esc(CONFIG.currency)}"></div>
+  <div class="col-md-3"><label class="small">Symbol</label><input type="text" id="cfg_sym" class="form-control" value="${esc(CONFIG.currency_symbol)}"></div>
+  <div class="col-md-3"><label class="small">VAT %</label><input type="number" step="0.01" id="cfg_vat" class="form-control" value="${(CONFIG.vatRate*100).toFixed(2)}"></div>
+  <div class="col-md-3"><label class="small">Decimals</label><input type="number" id="cfg_dec" class="form-control" value="${CONFIG.decimalPlaces}"></div>
+  <div class="col-md-4"><label class="small">Invoice Prefix</label><input type="text" id="cfg_prefix" class="form-control" value="${esc(CONFIG.invoice_prefix)}"></div>
+  <div class="col-md-4"><label class="small">Low Stock Alert</label><input type="number" id="cfg_lowstock" class="form-control" value="${CONFIG.lowStockAlert}"></div>
+  <div class="col-md-4"><div class="form-check form-switch mt-4"><input class="form-check-input" type="checkbox" id="cfg_vaton" ${CONFIG.vatEnabled?'checked':''}><label class="form-check-label">VAT Enabled</label></div></div>
+  </div>
+  <button class="btn btn-success mt-3" onclick="saveBiz()">Save</button>
+  </div>
+
+  <div class="tab-pane fade" id="set-admin">
+  <h5>👤 Admin Email Addresses</h5>
+  <p class="text-muted small">These emails are used for: admin notifications, password reset requests, and business alerts.</p>
+  <div id="adminEmailList" class="mb-3">
+  ${CONFIG.admin_emails.map((e,i)=>`
+    <div class="d-flex gap-2 mb-2 align-items-center">
+      <input type="email" class="form-control form-control-sm admin-email-input" value="${esc(e)}" data-idx="${i}">
+      <button class="btn btn-sm btn-outline-danger" onclick="removeAdminEmail(${i})"><i class="fas fa-trash"></i></button>
+    </div>`).join('')}
+  </div>
+  <div class="input-group mb-3">
+    <input type="email" id="newAdminEmail" class="form-control" placeholder="newadmin@example.com">
+    <button class="btn btn-success" onclick="addAdminEmail()"><i class="fas fa-plus"></i> Add</button>
+  </div>
+  <button class="btn btn-success" onclick="saveAdminEmails()">Save All Emails</button>
+  <hr class="my-4">
+  <h6>🔑 Password Reset for Users</h6>
+  <p class="text-muted small">Send a reset code to any user's email, or reset their password directly.</p>
+  <div class="list-group mb-3">
+  ${users.filter(u=>!u.is_deleted).map(u=>`
+    <div class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div><strong>${esc(u.fullname)}</strong> <small class="text-muted">(${esc(u.username)})</small><br><small>${esc(u.email||'no email')}</small></div>
+      <div class="d-flex gap-1">
+        <button class="btn btn-sm btn-outline-primary" onclick="openChangePwd(${u.id})"><i class="fas fa-key"></i> Change</button>
+        <button class="btn btn-sm btn-outline-warning" onclick="sendResetToUser(${u.id})"><i class="fas fa-paper-plane"></i> Send Code</button>
+      </div>
+    </div>`).join('')}
+  </div>
+  </div>
+
+  <div class="tab-pane fade" id="set-notif">
+  <h5>🔔 Notification Channels</h5>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="n_browser" ${CONFIG.notif_browser?'checked':''}><label class="form-check-label"><i class="fas fa-bell"></i> Browser Push Notifications</label></div>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="n_email" ${CONFIG.notif_email?'checked':''}><label class="form-check-label"><i class="fas fa-envelope"></i> Email (via EmailJS)</label></div>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="n_sms" ${CONFIG.notif_sms?'checked':''}><label class="form-check-label"><i class="fas fa-sms"></i> SMS (via Fast2SMS)</label></div>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="n_sound" ${CONFIG.notif_sound?'checked':''}><label class="form-check-label"><i class="fas fa-volume-up"></i> Sound Alerts</label></div>
+  <h6 class="mt-3">Events</h6>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="e_sale" ${CONFIG.notif_on_sale?'checked':''}><label class="form-check-label">New Sale</label></div>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="e_lowstock" ${CONFIG.notif_on_lowstock?'checked':''}><label class="form-check-label">Low Stock</label></div>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="e_purchase" ${CONFIG.notif_on_purchase?'checked':''}><label class="form-check-label">New Purchase</label></div>
+  <hr>
+  <h6>📧 EmailJS Setup (Free 200/mo)</h6>
+  <div class="row g-2">
+  <div class="col-md-4"><label class="small">Service ID</label><input type="text" id="n_emailjs_service" class="form-control form-control-sm" value="${esc(CONFIG.emailjs_service)}" placeholder="service_xxx"></div>
+  <div class="col-md-4"><label class="small">Template ID</label><input type="text" id="n_emailjs_template" class="form-control form-control-sm" value="${esc(CONFIG.emailjs_template)}" placeholder="template_xxx"></div>
+  <div class="col-md-4"><label class="small">Public Key</label><input type="text" id="n_emailjs_public" class="form-control form-control-sm" value="${esc(CONFIG.emailjs_public)}" placeholder="xxxxx"></div>
+  </div>
+  <small class="text-muted d-block mt-1">Free from <a href="https://www.emailjs.com" target="_blank">emailjs.com</a> — enables real password reset emails.</small>
+  <button class="btn btn-success mt-3" onclick="saveNotif()">Save</button>
+  <button class="btn btn-primary mt-3" onclick="testAllChannels()">🧪 Test</button>
+  </div>
+
+  <div class="tab-pane fade" id="set-backup">
+  <h5>💾 Auto Backup Settings</h5>
+  <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="bk_enabled" ${CONFIG.auto_backup_enabled?'checked':''}><label class="form-check-label"><strong>Enable Auto Backup</strong> — creates snapshots automatically</label></div>
+  <label class="small">Backup interval (minutes):</label>
+  <input type="number" id="bk_interval" class="form-control mb-2" value="${CONFIG.auto_backup_interval||5}" min="1" max="60">
+  <label class="small">Max snapshots to keep:</label>
+  <input type="number" id="bk_max" class="form-control mb-2" value="${CONFIG.auto_backup_max||10}" min="3" max="50">
+  <button class="btn btn-success mt-2" onclick="saveBackupSettings()">Save</button>
+  <div class="alert alert-info small mt-3"><i class="fas fa-info-circle"></i> Backups are stored in your browser's localStorage. Also triggered after every sale and save. Download JSON backups weekly for off-device safety.</div>
+  </div>
+
+  <div class="tab-pane fade" id="set-look">
+  <h5>Appearance</h5>
+  <label class="small">Theme</label>
+  <div class="d-flex gap-2 mb-3 flex-wrap">
+  <button class="btn" style="background:#1e7e34;color:#fff" onclick="setTheme('green')">Green</button>
+  <button class="btn" style="background:#1e40af;color:#fff" onclick="setTheme('blue')">Blue</button>
+  <button class="btn" style="background:#7c3aed;color:#fff" onclick="setTheme('purple')">Purple</button>
+  <button class="btn" style="background:#dc2626;color:#fff" onclick="setTheme('red')">Red</button>
+  </div>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="cfg_sound" ${CONFIG.soundEnabled?'checked':''}><label class="form-check-label">Sound Effects</label></div>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="cfg_anim" ${CONFIG.animationEnabled?'checked':''}><label class="form-check-label">Animations</label></div>
+  <button class="btn btn-success mt-3" onclick="saveLook()">Save</button>
+  </div>
+
+  <div class="tab-pane fade" id="set-ai">
+  <h5>Gemini AI</h5>
+  <label>API Key:</label>
+  <input type="password" id="cfg_apikey" class="form-control mb-2" value="${esc(geminiApiKey)}" placeholder="AIza...">
+  <label>Model:</label>
+  <select id="cfg_model" class="form-select mb-2">${GEMINI_MODELS.map(m=>`<option value="${m}" ${m===geminiWorkingModel?'selected':''}>${m}</option>`).join('')}</select>
+  <div class="alert alert-info small"><a href="https://aistudio.google.com/app/apikey" target="_blank">Get Free API Key</a></div>
+  <button class="btn btn-success w-100 mb-2" onclick="saveAI()">Save</button>
+  <button class="btn btn-outline-primary w-100" onclick="testGem()">Test</button>
+  <div id="testResult"></div>
+  </div>
+
+  <div class="tab-pane fade" id="set-gen">
+  <h5>🔢 Auto-Generate Settings</h5>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="gen_barcode" ${CONFIG.auto_barcode?'checked':''}><label class="form-check-label"><strong>Auto Barcode (EAN-13)</strong></label></div>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="gen_imei" ${CONFIG.auto_imei?'checked':''}><label class="form-check-label"><strong>Auto IMEI (15-digit)</strong></label></div>
+  <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="gen_serial" ${CONFIG.auto_serial?'checked':''}><label class="form-check-label"><strong>Auto Serial Number</strong></label></div>
+  <button class="btn btn-success mt-3" onclick="saveGen()">Save</button>
+  </div>
+
+  </div>
+  </div></div>`;
+};
+
+window.saveBiz=()=>{
+  CONFIG.business_name=document.getElementById('cfg_biz').value;
+  CONFIG.legal_name=document.getElementById('cfg_legal').value;
+  CONFIG.cr_no=document.getElementById('cfg_cr').value;
+  CONFIG.phone=document.getElementById('cfg_phone').value;
+  CONFIG.email=document.getElementById('cfg_email').value;
+  CONFIG.address=document.getElementById('cfg_addr').value;
+  CONFIG.currency=document.getElementById('cfg_curr').value;
+  CONFIG.currency_symbol=document.getElementById('cfg_sym').value;
+  CONFIG.vatRate=(parseFloat(document.getElementById('cfg_vat').value)||5)/100;
+  CONFIG.decimalPlaces=parseInt(document.getElementById('cfg_dec').value)||3;
+  CONFIG.invoice_prefix=document.getElementById('cfg_prefix').value;
+  CONFIG.lowStockAlert=parseInt(document.getElementById('cfg_lowstock').value)||5;
+  CONFIG.vatEnabled=document.getElementById('cfg_vaton').checked;
+  saveConfig();SoundEngine.success();toast('Saved','success');logAudit('Business info updated','config',null);
+  performAutoBackup('config-change');
+};
+
+window.addAdminEmail=()=>{
+  const v=document.getElementById('newAdminEmail').value.trim().toLowerCase();
+  if(!v||!v.includes('@'))return toast('Valid email required','error');
+  if(CONFIG.admin_emails.includes(v))return toast('Already added','warning');
+  CONFIG.admin_emails.push(v);
+  saveConfig();SoundEngine.success();
+  toast('Email added','success');
+  document.getElementById('newAdminEmail').value='';
+  navigateTo('settings');
+};
+window.removeAdminEmail=idx=>{
+  if(CONFIG.admin_emails.length<=1)return toast('At least one admin email required','warning');
+  CONFIG.admin_emails.splice(idx,1);
+  saveConfig();SoundEngine.warning();
+  toast('Removed','info');
+  navigateTo('settings');
+};
+window.saveAdminEmails=()=>{
+  const inputs=document.querySelectorAll('.admin-email-input');
+  const list=[];
+  inputs.forEach(i=>{const v=i.value.trim().toLowerCase();if(v&&v.includes('@'))list.push(v);});
+  if(!list.length)return toast('At least one email required','error');
+  CONFIG.admin_emails=[...new Set(list)];
+  saveConfig();SoundEngine.success();toast('Admin emails saved','success');
+  performAutoBackup('config-change');
+};
+window.sendResetToUser=async userId=>{
+  const u=users.find(x=>x.id===userId);
+  if(!u||!u.email)return toast('User has no email','error');
+  if(!confirm(`Send reset code to ${u.email}?`))return;
+  const code=String(Math.floor(100000+Math.random()*900000));
+  u.reset_code=code;u.reset_expires=Date.now()+15*60*1000;
+  saveAll();
+  let sent=false;
+  if(CONFIG.emailjs_service&&CONFIG.emailjs_public&&CONFIG.emailjs_template){
+    try{
+      await emailjs.send(CONFIG.emailjs_service,CONFIG.emailjs_template,{
+        to_email:u.email,to_name:u.fullname,
+        subject:`Password Reset - ${CONFIG.business_name}`,
+        message:`Your reset code: ${code}\n\nExpires in 15 min.`,
+        business:CONFIG.business_name,time:new Date().toLocaleString()
+      },CONFIG.emailjs_public);
+      sent=true;
+    }catch(e){console.warn(e);}
+  }
+  logAudit(`Reset code sent to ${u.username}`,'user',u.id);
+  if(sent)toast('Email sent to '+u.email,'success');
+  else{alert('Email service not configured.\n\nReset code for '+u.username+': '+code+'\n\nExpires in 15 minutes.');toast('Code generated (shown in alert)','info',4000);}
+};
+
+window.saveNotif=()=>{
+  CONFIG.notif_browser=document.getElementById('n_browser').checked;
+  CONFIG.notif_email=document.getElementById('n_email').checked;
+  CONFIG.notif_sms=document.getElementById('n_sms').checked;
+  CONFIG.notif_sound=document.getElementById('n_sound').checked;
+  CONFIG.notif_on_sale=document.getElementById('e_sale').checked;
+  CONFIG.notif_on_lowstock=document.getElementById('e_lowstock').checked;
+  CONFIG.notif_on_purchase=document.getElementById('e_purchase').checked;
+  CONFIG.emailjs_service=document.getElementById('n_emailjs_service').value;
+  CONFIG.emailjs_template=document.getElementById('n_emailjs_template').value;
+  CONFIG.emailjs_public=document.getElementById('n_emailjs_public').value;
+  saveConfig();
+  if(CONFIG.emailjs_public&&window.emailjs)emailjs.init(CONFIG.emailjs_public);
+  SoundEngine.success();toast('Notification settings saved','success');
+};
+window.testAllChannels=()=>{pushNotification('🧪 Test All','Testing all notification channels at '+new Date().toLocaleTimeString(),'info',true);toast('Test sent','success');};
+window.saveBackupSettings=()=>{
+  CONFIG.auto_backup_enabled=document.getElementById('bk_enabled').checked;
+  CONFIG.auto_backup_interval=Math.max(1,parseInt(document.getElementById('bk_interval').value)||5);
+  CONFIG.auto_backup_max=Math.max(3,parseInt(document.getElementById('bk_max').value)||10);
+  saveConfig();
+  startAutoBackup();
+  SoundEngine.success();toast('Backup settings saved','success');
+};
+window.setTheme=theme=>{CONFIG.theme=theme;saveConfig();applyConfig();SoundEngine.click();toast('Theme: '+theme,'info',1500);};
+window.saveLook=()=>{CONFIG.soundEnabled=document.getElementById('cfg_sound').checked;CONFIG.animationEnabled=document.getElementById('cfg_anim').checked;saveConfig();applyConfig();SoundEngine.success();toast('Saved','success');};
+window.saveAI=()=>{const k=document.getElementById('cfg_apikey').value.trim();const m=document.getElementById('cfg_model').value;if(!k){SoundEngine.error();return toast('Key required','error');}geminiApiKey=k;geminiWorkingModel=m;localStorage.setItem('gemini_api_key',k);localStorage.setItem('gemini_model',m);document.getElementById('aiModelLabel').innerText=m;SoundEngine.success();toast('AI saved','success');};
+window.saveGen=()=>{CONFIG.auto_barcode=document.getElementById('gen_barcode').checked;CONFIG.auto_imei=document.getElementById('gen_imei').checked;CONFIG.auto_serial=document.getElementById('gen_serial').checked;saveConfig();SoundEngine.success();toast('Saved','success');};
+window.testGem=async()=>{
+  const key=document.getElementById('cfg_apikey').value.trim()||geminiApiKey;
+  if(!key)return toast('Key required','error');
+  const model=document.getElementById('cfg_model').value;
+  const el=document.getElementById('testResult');
+  el.innerHTML='<div class="alert alert-info mt-2">Testing...</div>';
+  try{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{
+      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
+      body:JSON.stringify({contents:[{parts:[{text:'Reply OK'}]}]})
+    });
+    const data=await res.json();
+    if(data.error){el.innerHTML=`<div class="alert alert-danger mt-2">❌ ${esc(data.error.message)}</div>`;SoundEngine.error();}
+    else{el.innerHTML=`<div class="alert alert-success mt-2">✅ Success! Model: ${model}</div>`;SoundEngine.success();}
+  }catch(err){el.innerHTML=`<div class="alert alert-danger mt-2">❌ ${esc(err.message)}</div>`;SoundEngine.error();}
+};
+
+// Simple pages
+pages.categories=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">Categories</h4></div><div class="card-body"><ul>${categories.map(c=>`<li>${esc(c.name)}</li>`).join('')}</ul></div></div>`;
+pages.stock=()=>{const total=products.filter(p=>!p.is_deleted).reduce((s,p)=>s+p.cost*p.stock,0);return `<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">📊 Stock Report</h4></div><div class="card-body"><div class="alert alert-success">Total Stock Value: <strong>${fmt(total)} ${cur()}</strong></div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Product</th><th>Stock</th><th>Value</th></tr></thead><tbody>${products.filter(p=>!p.is_deleted).map(p=>`<tr><td>${esc(p.name)}</td><td><span class="badge bg-${p.stock>CONFIG.lowStockAlert?'success':'warning'}">${p.stock}</span></td><td>${fmt(p.cost*p.stock)} ${cur()}</td></tr>`).join('')}</tbody></table></div></div></div>`;};
+pages.barcode=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🔲 Barcode Generator</h4></div><div class="card-body"><div class="input-group mb-3"><input type="text" id="bcInp" class="form-control" value="${generateEAN13()}"><button class="btn btn-success" onclick="genBc()">Generate</button><button class="btn btn-outline-success" onclick="document.getElementById('bcInp').value=generateEAN13();genBc()">Auto</button></div><div class="text-center p-3 bg-light rounded overflow-auto"><svg id="bcSvg"></svg></div><button class="btn btn-success mt-3 w-100" onclick="window.print()"><i class="fas fa-print"></i> Print</button></div></div>`;
+window.genBc=()=>{const v=document.getElementById('bcInp').value;if(!v)return;try{JsBarcode('#bcSvg',v,{format:'CODE128',width:2,height:80,displayValue:true});SoundEngine.beep();}catch(e){toast('Error','error');}};
+window.after_barcode=()=>genBc();
+pages.imei=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">📱 IMEI Generator</h4></div><div class="card-body"><div class="row g-3 mb-3"><div class="col-md-6"><div class="card p-3 text-center"><h6>Generate IMEI</h6><button class="btn btn-success w-100 mb-2" onclick="document.getElementById('newIm').value=generateIMEI()">Generate</button><input type="text" id="newIm" class="form-control" readonly></div></div><div class="col-md-6"><div class="card p-3 text-center"><h6>Generate Serial</h6><button class="btn btn-success w-100 mb-2" onclick="document.getElementById('newSn').value=generateSerial('RST')">Generate</button><input type="text" id="newSn" class="form-control" readonly></div></div></div><h5>Search</h5><div class="input-group mb-3"><input type="text" id="imeiSearch" class="form-control" placeholder="IMEI / Serial / Barcode"><button class="btn btn-success" onclick="searchIMEI()">Search</button></div><div id="imeiResult"></div></div></div>`;
+window.searchIMEI=()=>{const q=document.getElementById('imeiSearch').value.trim();if(!q)return;const p=products.find(x=>!x.is_deleted&&(x.imei===q||x.serial===q||x.barcode===q));const el=document.getElementById('imeiResult');if(!p){el.innerHTML='<div class="alert alert-danger">Not found</div>';SoundEngine.error();return;}SoundEngine.success();el.innerHTML=`<div class="alert alert-success"><h5>✅ Found</h5><p><strong>Name:</strong> ${esc(p.name)}</p><p><strong>IMEI:</strong> ${esc(p.imei||'-')}</p><p><strong>Serial:</strong> ${esc(p.serial||'-')}</p><p><strong>Stock:</strong> ${p.stock}</p></div>`;};
+pages.transfer=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🔄 Transfer</h4></div><div class="card-body"><table class="table">${itemTransfers.map(t=>`<tr><td>${esc(t.date)}</td><td>${esc(t.product)}</td><td>${t.qty}</td></tr>`).join('')||'<tr><td>No data</td></tr>'}</table></div></div>`;
+pages.damage=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">⚠️ Damage</h4></div><div class="card-body"><table class="table">${damageEntries.map(d=>`<tr><td>${esc(d.date)}</td><td>${esc(d.product)}</td><td>${d.qty}</td></tr>`).join('')||'<tr><td>No data</td></tr>'}</table></div></div>`;
+pages.purchase=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">📥 Purchase</h4></div><div class="card-body"><button class="btn btn-success btn-sm mb-2" onclick="quickPurchase()">+ Quick Purchase</button><table class="table">${purchases.slice(0,20).map(p=>`<tr><td>${esc(p.date)}</td><td>${esc(p.product)}</td><td>${p.qty}</td><td>${fmt(p.total)}</td></tr>`).join('')||'<tr><td>No data</td></tr>'}</table></div></div>`;
+window.quickPurchase=()=>{if(!products.length)return;const p=products[0];const qty=parseInt(prompt('Quantity:',1)||1);if(qty>0){p.stock+=qty;purchases.unshift({id:nextId.purchase++,date:new Date().toLocaleString(),product:p.name,qty,total:qty*p.cost});saveAll();performAutoBackup('purchase');SoundEngine.success();toast('Purchase added','success');navigateTo('purchase');}};
+pages.sales=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🧾 Sales Report</h4></div><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Operator</th><th>Total</th></tr></thead><tbody>${invoices.slice(0,50).map(i=>`<tr><td>${esc(i.invoice_no)}</td><td>${esc(i.date)}</td><td>${esc(i.customer)}</td><td><span class="badge bg-primary">${esc(i.operator_name||i.operator||'-')}</span></td><td class="fw-bold">${fmt(i.grand_total)}</td></tr>`).join('')||'<tr><td colspan="5" class="text-center">No data</td></tr>'}</tbody></table></div></div></div>`;
+pages.customers=()=>`<div class="card shadow-sm"><div class="card-header d-flex justify-content-between"><h4 class="mb-0">👥 Customers</h4><button class="btn btn-success btn-sm" onclick="addCust()">+ Add</button></div><div class="card-body"><table class="table">${customers.filter(c=>!c.is_deleted).map(c=>`<tr><td>${c.id}</td><td>${esc(c.name)}</td><td>${esc(c.phone||'-')}</td><td>${esc(c.email||'-')}</td></tr>`).join('')}</table></div></div>`;
+window.addCust=()=>{const name=prompt('Customer name:');if(!name)return;const phone=prompt('Phone:')||'';const email=prompt('Email:')||'';customers.push({id:nextId.customer++,name,phone,email,balance:0,is_deleted:false});saveAll();SoundEngine.success();toast('Customer added','success');navigateTo('customers');};
+pages.accounts=()=>{const rev=invoices.reduce((s,i)=>s+i.subtotal,0);const prof=invoices.reduce((s,i)=>s+i.profit,0);return `<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">💰 Profit & Loss</h4></div><div class="card-body"><div class="row g-2"><div class="col-md-6"><div class="card bg-primary text-white p-3"><h5>Revenue</h5><h3>${fmt(rev)}</h3></div></div><div class="col-md-6"><div class="card bg-success text-white p-3"><h5>Profit</h5><h3>${fmt(prof)}</h3></div></div></div></div></div>`;};
+pages.cashbook=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">📒 Cashbook</h4></div><div class="card-body">Cash log</div></div>`;
+pages.banking=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🏦 Banking</h4></div><div class="card-body">Bank log</div></div>`;
+pages.employees=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">👔 Employees</h4></div><div class="card-body"><table class="table">${employees.map(e=>`<tr><td>${esc(e.name)}</td><td>${fmt(e.salary)}</td></tr>`).join('')||'<tr><td>No employees</td></tr>'}</table></div></div>`;
+pages.attendance=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">📅 Attendance</h4></div><div class="card-body">Records</div></div>`;
+pages.salary=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">💼 Salary</h4></div><div class="card-body">Records</div></div>`;
+pages.branches=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🏢 Branches</h4></div><div class="card-body"><table class="table">${branches.map(b=>`<tr><td>${b.id}</td><td>${esc(b.name)}</td><td>${esc(b.address)}</td></tr>`).join('')}</table></div></div>`;
+pages.warranty=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🛡️ Warranty</h4></div><div class="card-body"><table class="table">${warranties.map(w=>`<tr><td>${esc(w.invoice)}</td><td>${esc(w.customer)}</td><td>${esc(w.product)}</td></tr>`).join('')||'<tr><td>No warranties</td></tr>'}</table></div></div>`;
+pages.installment=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">💳 Installment</h4></div><div class="card-body">Records</div></div>`;
+pages.target=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🎯 Target</h4></div><div class="card-body">Targets</div></div>`;
+pages.businessStudio=()=>{const bi=getBusiness();return `<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🎨 Business Studio</h4></div><div class="card-body text-center"><div style="background:linear-gradient(135deg,#0f4c3a,#1e7e34);color:#fff;padding:30px;border-radius:15px;max-width:400px;margin:0 auto"><h2>${esc(bi.business_name)}</h2><p>${esc(bi.legal_name)}</p><hr><p>📞 ${esc(bi.phone)}</p><p>✉️ ${esc(bi.email)}</p><p>📍 ${esc(bi.address)}</p></div><button class="btn btn-success mt-3" onclick="window.print()">Print</button></div></div>`;};
+pages.utilityBills=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">⚡ Utilities</h4></div><div class="card-body">Utility bills</div></div>`;
+pages.recharge=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">📱 Recharge</h4></div><div class="card-body">Recharge logs</div></div>`;
+pages.users=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">👤 Users</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody>${users.filter(u=>!u.is_deleted).map(u=>`<tr><td>${u.id}</td><td>${esc(u.username)}</td><td>${esc(u.fullname)}</td><td><small>${esc(u.email||'-')}</small></td><td><span class="badge bg-${u.role==='admin'?'danger':'success'}">${u.role}</span></td><td class="text-nowrap"><button class="btn btn-sm btn-outline-primary" onclick="openChangePwd(${u.id})"><i class="fas fa-key"></i></button> <button class="btn btn-sm btn-outline-warning" onclick="sendResetToUser(${u.id})"><i class="fas fa-paper-plane"></i></button></td></tr>`).join('')}</tbody></table></div></div></div>`;
+pages.audit=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">📋 Audit Log</h4></div><div class="card-body"><div style="max-height:600px;overflow-y:auto"><table class="table table-sm"><thead><tr><th>Time</th><th>User</th><th>Action</th></tr></thead><tbody>${auditLogs.slice(0,200).map(l=>`<tr><td><small>${esc(l.time)}</small></td><td>${esc(l.user)}</td><td>${esc(l.action)}</td></tr>`).join('')||'<tr><td colspan="3">No logs</td></tr>'}</tbody></table></div></div></div>`;
+pages.trash=()=>`<div class="card shadow-sm"><div class="card-header"><h4 class="mb-0">🗑️ Recycle Bin</h4></div><div class="card-body"><table class="table">${products.filter(p=>p.is_deleted).map(p=>`<tr class="text-muted"><td>${esc(p.name)}</td><td><button class="btn btn-sm btn-success" onclick="restoreProd(${p.id})">Restore</button></td></tr>`).join('')||'<tr><td>Empty</td></tr>'}</table></div></div>`;
+window.restoreProd=id=>{const p=products.find(x=>x.id===id);if(p){p.is_deleted=false;saveAll();navigateTo('trash');}};
+
+// SCANNER
+window.openScanner=target=>{scannerTarget=target||'pos';SoundEngine.click();const m=new bootstrap.Modal(document.getElementById('scannerModal'));m.show();setTimeout(startScan,300);};
+function startScan(){
+  document.getElementById('scannerStatus').innerText='Starting...';
+  if(scannerInstance){scannerInstance.clear().catch(()=>{});scannerInstance=null;}
+  scannerInstance=new Html5Qrcode('qrReader');
+  scannerInstance.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:250}},txt=>handleScan(txt),()=>{}).then(()=>{document.getElementById('scannerStatus').innerText='✅ Ready';}).catch(err=>{document.getElementById('scannerStatus').innerHTML='❌ '+err;});
+}
+window.stopScanner=()=>{if(scannerInstance){scannerInstance.stop().then(()=>{scannerInstance.clear();scannerInstance=null;}).catch(()=>{});}};
+window.handleManualBarcode=()=>{const v=document.getElementById('manualBarcode').value.trim();if(!v)return;handleScan(v);document.getElementById('manualBarcode').value='';};
+function handleScan(code){
+  const p=products.find(x=>!x.is_deleted&&(x.barcode===code||x.imei===code||x.serial===code));
+  const close=()=>{stopScanner();const m=bootstrap.Modal.getInstance(document.getElementById('scannerModal'));if(m)m.hide();};
+  if(scannerTarget==='pos'){if(p){SoundEngine.scan();addToCart(p.id);setTimeout(close,700);}else{SoundEngine.error();}}
+  else if(scannerTarget==='barcode_field'){SoundEngine.scan();const f=document.getElementById('f_barcode');if(f)f.value=code;close();}
+  else if(scannerTarget==='product_search'){SoundEngine.scan();const inp=document.querySelector('.search-wrap input');if(inp){inp.value=code;inp.dispatchEvent(new Event('input'));}close();}
+}
+document.getElementById('scannerModal')?.addEventListener('hidden.bs.modal',stopScanner);
+
+// AI
+document.getElementById('chatToggle')?.addEventListener('click',()=>{SoundEngine.click();document.getElementById('chatWindow').classList.toggle('open');});
+document.getElementById('chatClose')?.addEventListener('click',()=>document.getElementById('chatWindow').classList.remove('open'));
+function addChat(t,h){const b=document.getElementById('chatMessages');const d=document.createElement('div');d.className='chat-msg '+t;d.innerHTML=h;b.appendChild(d);b.scrollTop=b.scrollHeight;}
+function showTyping(){const b=document.getElementById('chatMessages');const d=document.createElement('div');d.id='typingIndicator';d.className='chat-msg ai';d.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';b.appendChild(d);b.scrollTop=b.scrollHeight;}
+function hideTyping(){document.getElementById('typingIndicator')?.remove();}
+window.sendToAI=async()=>{
+  const inp=document.getElementById('chatInput');const msg=inp.value.trim();if(!msg)return;
+  if(!geminiApiKey){SoundEngine.error();toast('Set API Key in Settings','error');return;}
+  addChat('user',esc(msg));inp.value='';SoundEngine.click();
+  chatHistory.push({role:'user',parts:[{text:msg}]});
+  showTyping();
+  const ctx=`You are RST AI. Business: ${CONFIG.business_name}. Products: ${products.filter(p=>!p.is_deleted).length}, Customers: ${customers.filter(c=>!c.is_deleted).length}, Invoices: ${invoices.length}. Answer briefly.`;
+  const list=[geminiWorkingModel,...GEMINI_MODELS.filter(m=>m!==geminiWorkingModel)];
+  let ok=false,err='';
+  for(const model of list){
+    try{
+      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{
+        method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':geminiApiKey},
+        body:JSON.stringify({contents:[{role:'user',parts:[{text:ctx}]},{role:'model',parts:[{text:'OK'}]},...chatHistory.slice(-6)]})
+      });
+      const data=await res.json();
+      if(data.error){err=data.error.message;continue;}
+      const reply=data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if(reply){
+        geminiWorkingModel=model;localStorage.setItem('gemini_model',model);
+        document.getElementById('aiModelLabel').innerText=model;
+        hideTyping();chatHistory.push({role:'model',parts:[{text:reply}]});
+        addChat('ai',esc(reply).replace(/\n/g,'<br>'));SoundEngine.notify();ok=true;break;
+      }
+    }catch(e){err=e.message;}
+  }
+  if(!ok){hideTyping();SoundEngine.error();addChat('ai','❌ '+esc(err));}
+};
+
+// LANG
+function setLang(lang){
+  SoundEngine.click();currentLang=lang;localStorage.setItem('lang',lang);
+  document.body.classList.toggle('rtl',lang==='ar');
+  document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(i18n[lang][k])el.textContent=i18n[lang][k];});
+  ['bn','en','ar'].forEach(l=>{
+    document.getElementById('lb_'+l)?.classList.toggle('active',l===lang);
+    document.getElementById('lbtn_'+l)?.classList.toggle('btn-success',l===lang);
+    document.getElementById('lbtn_'+l)?.classList.toggle('btn-outline-success',l!==lang);
+  });
+  if(currentUser){
+    const ap=document.querySelector('#sidebar .nav-link.active')?.dataset.page||'dashboard';
+    const fn=pages[ap]||pages.dashboard;
+    document.getElementById('pageContent').innerHTML=fn();
+    if(typeof window['after_'+ap]==='function')window['after_'+ap]();
+  }
+  toast(lang==='bn'?'ভাষা পরিবর্তিত':lang==='ar'?'تم التغيير':'Language changed','info',2000);
+}
+
+function applyConfig(){
+  document.documentElement.style.setProperty('--primary',CONFIG.theme==='blue'?'#1e40af':CONFIG.theme==='purple'?'#7c3aed':CONFIG.theme==='red'?'#dc2626':'#1e7e34');
+  document.documentElement.style.setProperty('--primary-dark',CONFIG.theme==='blue'?'#1e3a8a':CONFIG.theme==='purple'?'#6d28d9':CONFIG.theme==='red'?'#b91c1c':'#0f4c3a');
+  soundEnabled=CONFIG.soundEnabled;animationEnabled=CONFIG.animationEnabled;saveConfig();
+}
+
+// LOGIN
+document.getElementById('loginForm')?.addEventListener('submit',e=>{
+  e.preventDefault();
+  const u=document.getElementById('loginUsername').value.trim();
+  const p=document.getElementById('loginPassword').value;
+  const user=users.find(x=>x.username===u&&x.password===p&&!x.is_deleted);
+  if(user){
+    SoundEngine.success();currentUser={...user};
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('mainApp').style.display='block';
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display=user.role==='admin'?'':'none');
+    document.getElementById('aiModelLabel').innerText=geminiWorkingModel;
+    logAudit('Login','auth',user.id);
+    navigateTo('dashboard');
+    toast(`👋 ${t('welcome')}, ${user.fullname}!`,'success');
+    pushNotification('👋 Welcome '+user.fullname,`Logged in as ${user.role} at ${new Date().toLocaleTimeString()}`,'info',false);
+    updateNotifBadge();
+    if(CONFIG.auto_backup_enabled)startAutoBackup();
+    const lowStock=products.filter(p=>!p.is_deleted&&p.stock<=CONFIG.lowStockAlert);
+    if(lowStock.length&&user.role==='admin'){
+      setTimeout(()=>pushNotification('⚠️ Low Stock Alert',`${lowStock.length} product(s) need restocking`,'stock',true),2000);
+    }
+    setTimeout(()=>checkNotifPermission(),3000);
+  }else{
+    SoundEngine.error();
+    document.getElementById('loginError').classList.remove('d-none');
+    document.getElementById('loginCard').classList.add('shake');
+    setTimeout(()=>document.getElementById('loginCard').classList.remove('shake'),500);
+  }
+});
+document.getElementById('logoutBtn')?.addEventListener('click',()=>{
+  if(confirm('Logout?')){
+    SoundEngine.click();logAudit('Logout','auth',currentUser?.id);
+    currentUser=null;
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('mainApp').style.display='none';
+    document.getElementById('loginUsername').value='';
+    document.getElementById('loginPassword').value='';
+    sessionStorage.clear();
+  }
+});
+
+// SIDEBAR
+document.querySelectorAll('#sidebar .nav-link[data-page]').forEach(l=>{
+  l.addEventListener('click',e=>{e.preventDefault();navigateTo(l.dataset.page);});
+});
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');SoundEngine.click();}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+document.getElementById('mobileToggle')?.addEventListener('click',openSidebar);
+document.getElementById('overlay')?.addEventListener('click',closeSidebar);
+
+// Swipe to open/close sidebar on mobile
+let touchStartX=0;
+document.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  const sidebar=document.getElementById('sidebar');
+  const isOpen=sidebar.classList.contains('open');
+  if(Math.abs(dx)<80)return;
+  if(!isOpen&&dx>60&&touchStartX<50)openSidebar();
+  else if(isOpen&&dx<-60)closeSidebar();
+},{passive:true});
+
+// Back button to close modals
+window.addEventListener('popstate',()=>{
+  document.querySelectorAll('.modal.show').forEach(m=>bootstrap.Modal.getInstance(m)?.hide());
+});
+
+// INIT
+applyConfig();saveAll();
+setLang(currentLang);
+updateNotifBadge();
+updateBackupIndicator();
+if(CONFIG.emailjs_public&&window.emailjs)emailjs.init(CONFIG.emailjs_public);
+// Start auto backup globally (even before login)
+if(CONFIG.auto_backup_enabled)setTimeout(()=>startAutoBackup(),2000);
+// Periodic indicator refresh
+setInterval(updateBackupIndicator,30000);
+
+console.log('%c RST ELECTRONICS ERP — Enhanced ','background:#1e7e34;color:#fff;font-size:16px;padding:8px;border-radius:8px');
+console.log('%c Auto-Backup | Password Reset | Admin Emails | Mobile Smooth ','background:#0f4c3a;color:#fbbf24;padding:4px 8px');
+</script>
+</body>
+</html>
